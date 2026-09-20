@@ -1,0 +1,55 @@
+@use '@/assets/styles/abstracts' as *;
+
+.button {
+  display: inline-flex;
+  min-height: 56px;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-md;
+  padding: 0 $spacing-lg;
+  border: 1px solid transparent;
+  border-radius: $radius-sm;
+  font-weight: 700;
+  transition: background-color $transition-fast, border-color $transition-fast;
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+.primary {
+  background: var(--color-brand);
+  color: #fff;
+
+  &:hover:not(:disabled) {
+    background: var(--color-brand-hover);
+  }
+}
+
+.secondary {
+  border-color: var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+}
+
+.ghost {
+  background: transparent;
+  color: var(--color-brand);
+}
+
+.fullWidth {
+  width: 100%;
+}
+
+.spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgb(255 255 255 / 45%);
+  border-top-color: #fff;
+  border-radius: $radius-full;
+  animation: spin 700ms linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

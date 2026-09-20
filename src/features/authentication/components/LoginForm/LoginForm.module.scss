@@ -1,0 +1,75 @@
+@use '@/assets/styles/abstracts' as *;
+
+.content { width: min(100%, 456px); }
+
+.header {
+  margin-bottom: 42px;
+
+  h1 {
+    color: var(--color-navy);
+    font-size: 2.4rem;
+    font-weight: 600;
+    line-height: 1.15;
+  }
+
+  p {
+    margin-top: $spacing-sm;
+    color: #627298;
+    font-size: $font-size-lg;
+  }
+}
+
+.form { display: grid; gap: 30px; }
+.passwordGroup { display: grid; gap: 10px; }
+
+.visibilityButton {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border: 0;
+  border-radius: $radius-sm;
+  background: transparent;
+  color: #7180a4;
+
+  &:focus-visible { @include focus-ring; }
+}
+
+.forgotLink,
+.contact a {
+  color: var(--color-brand);
+  text-decoration: none;
+
+  &:hover { text-decoration: underline; }
+  &:focus-visible { @include focus-ring; }
+}
+
+.forgotLink {
+  justify-self: end;
+  font-size: $font-size-sm;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  color: #667493;
+  font-size: $font-size-sm;
+
+  &::before,
+  &::after {
+    height: 1px;
+    flex: 1;
+    background: #d4dcea;
+    content: '';
+  }
+}
+
+.contact {
+  color: var(--color-navy);
+  text-align: center;
+}
+
+@include respond-to(md) {
+  .header h1 { font-size: 2.6rem; }
+}

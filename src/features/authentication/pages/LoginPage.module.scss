@@ -1,0 +1,25 @@
+@use '@/assets/styles/abstracts' as *;
+
+.page { min-height: 100vh; min-height: 100dvh; background: var(--color-surface); }
+
+.formPanel {
+  display: flex;
+  min-height: 100vh;
+  min-height: 100dvh;
+  flex-direction: column;
+  justify-content: center;
+  padding: $spacing-lg;
+}
+
+.mobileBrand { margin-bottom: $spacing-2xl; }
+
+@include respond-to(sm) {
+  .formPanel { align-items: center; padding: $spacing-2xl; }
+  .mobileBrand { width: min(100%, 456px); }
+}
+
+@include respond-to(lg) {
+  .page { display: grid; grid-template-columns: minmax(0, 61fr) minmax(450px, 39fr); }
+  .formPanel { padding: clamp(48px, 6vw, 96px); }
+  .mobileBrand { display: none; }
+}
