@@ -1,0 +1,16 @@
+@use '../abstracts' as *;
+
+.stackSm {
+  display: grid;
+  gap: $spacing-sm;
+}
+
+.stackMd {
+  display: grid;
+  gap: $spacing-md;
+}
+
+.stackLg {
+  display: grid;
+  gap: $spacing-lg;
+}

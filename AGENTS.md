@@ -550,6 +550,9 @@ Use clear, predictable import paths.
 
 Prefer configured aliases instead of deeply nested relative imports when the project supports them.
 
+Do not import shared top-level folders such as `assets` through long relative paths.
+Prefer the configured short alias instead, for example `@/assets/hero.png` instead of `../../../assets/hero.png`.
+
 Avoid circular dependencies.
 
 Do not overuse barrel files (`index.ts`). Use them intentionally at meaningful module boundaries.
