@@ -33,7 +33,7 @@
 .copy {
   position: relative;
   max-width: 620px;
-  margin-top: 3vh;
+  margin-top: clamp($spacing-lg, 3vh, $spacing-2xl);
   isolation: isolate;
 }
 
@@ -80,7 +80,7 @@
   bottom: 0;
   left: 0;
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   align-items: stretch;
   overflow: hidden;
   margin-top: 0;
@@ -96,7 +96,9 @@
   min-width: 0;
   align-items: center;
 
-  &:not(:last-child) { border-right: 1px solid rgb(30 66 88 / 12%); }
+  &:nth-child(odd) { border-right: 1px solid rgb(30 66 88 / 12%); }
+
+  &:nth-child(-n + 2) { border-bottom: 1px solid rgb(30 66 88 / 12%); }
 }
 
 .flowArrow {
@@ -104,7 +106,7 @@
   z-index: 1;
   top: 50%;
   right: 0;
-  display: grid;
+  display: none;
   width: 26px;
   height: 26px;
   border: 1px solid rgb(8 127 157 / 20%);
@@ -120,10 +122,10 @@
 
 .step {
   display: flex;
-  min-height: 88px;
+  min-height: 76px;
   flex: 1;
   align-items: center;
-  padding: 12px clamp(8px, 1vw, 14px);
+  padding: 10px clamp(8px, 1vw, 14px);
   background: transparent;
   text-align: left;
 
@@ -164,6 +166,24 @@
   margin-left: 8px;
 }
 
-.footer { position: absolute; z-index: 2; bottom: 106px; left: clamp(32px, 4vw, 72px); color: #fff; font-size: 0.65rem; font-weight: 700; letter-spacing: .26em; text-shadow: 0 1px 3px rgb(5 25 49 / 80%); text-transform: uppercase; }
+.footer { position: absolute; z-index: 2; bottom: 176px; left: clamp(32px, 4vw, 72px); color: #fff; font-size: 0.65rem; font-weight: 700; letter-spacing: .26em; text-shadow: 0 1px 3px rgb(5 25 49 / 80%); text-transform: uppercase; }
 
 @include respond-to(lg) { .hero { display: block; } }
+
+@include respond-to(xl) {
+  .process { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+  .flowArrow { display: grid; }
+
+  .stepWrap {
+    &:not(:last-child) { border-right: 1px solid rgb(30 66 88 / 12%); }
+    &:nth-child(-n + 2) { border-bottom: 0; }
+  }
+
+  .step {
+    min-height: 88px;
+    padding: 12px clamp(8px, 1vw, 14px);
+  }
+
+  .footer { bottom: 106px; }
+}

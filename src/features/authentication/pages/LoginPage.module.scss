@@ -1,25 +1,44 @@
 @use '@/assets/styles/abstracts' as *;
 
-.page { min-height: 100vh; min-height: 100dvh; background: var(--color-surface); }
+.page {
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100svh;
+  overflow-x: clip;
+  background: var(--color-surface);
+}
 
 .formPanel {
   display: flex;
+  width: 100%;
   min-height: 100vh;
-  min-height: 100dvh;
+  min-height: 100svh;
+  align-items: center;
   flex-direction: column;
   justify-content: center;
-  padding: $spacing-lg;
+  padding: clamp($spacing-lg, 6vw, $spacing-2xl) $spacing-lg;
 }
 
-.mobileBrand { margin-bottom: $spacing-2xl; }
+.mobileBrand {
+  width: min(420px, calc(100vw - #{$spacing-lg * 2}));
+  margin-bottom: clamp($spacing-xl, 8vw, $spacing-2xl);
+}
 
 @include respond-to(sm) {
-  .formPanel { align-items: center; padding: $spacing-2xl; }
-  .mobileBrand { width: min(100%, 456px); }
+  .formPanel { padding: $spacing-2xl; }
+  .mobileBrand { width: min(456px, calc(100vw - #{$spacing-2xl * 2})); }
 }
 
 @include respond-to(lg) {
-  .page { display: grid; grid-template-columns: minmax(0, 61fr) minmax(450px, 39fr); }
-  .formPanel { padding: clamp(48px, 6vw, 96px); }
+  .page {
+    display: grid;
+    grid-template-columns: minmax(0, 1.45fr) minmax(360px, 0.95fr);
+  }
+
+  .formPanel { padding: clamp($spacing-2xl, 6vw, 96px); }
   .mobileBrand { display: none; }
+}
+
+@include respond-to(xl) {
+  .page { grid-template-columns: minmax(0, 61fr) minmax(420px, 39fr); }
 }

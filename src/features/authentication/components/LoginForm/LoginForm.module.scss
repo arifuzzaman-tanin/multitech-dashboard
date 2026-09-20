@@ -1,13 +1,19 @@
 @use '@/assets/styles/abstracts' as *;
 
-.content { width: min(100%, 456px); }
+.content {
+  width: min(456px, calc(100vw - #{$spacing-lg * 2}));
+}
+
+@include respond-to(sm) {
+  .content { width: min(456px, calc(100vw - #{$spacing-2xl * 2})); }
+}
 
 .header {
-  margin-bottom: 42px;
+  margin-bottom: clamp($spacing-xl, 7vw, 42px);
 
   h1 {
     color: var(--color-navy);
-    font-size: 2.4rem;
+    font-size: clamp($font-size-2xl, 9vw, 2.4rem);
     font-weight: 600;
     line-height: 1.15;
   }
@@ -15,11 +21,16 @@
   p {
     margin-top: $spacing-sm;
     color: #627298;
-    font-size: $font-size-lg;
+    font-size: clamp($font-size-md, 4vw, $font-size-lg);
+    line-height: 1.45;
   }
 }
 
-.form { display: grid; gap: 30px; }
+.form {
+  display: grid;
+  gap: clamp($spacing-lg, 6vw, 30px);
+}
+
 .passwordGroup { display: grid; gap: 10px; }
 
 .visibilityButton {
@@ -45,8 +56,15 @@
 }
 
 .forgotLink {
+  display: inline-flex;
+  max-width: 100%;
+  min-height: 44px;
+  align-items: center;
+  justify-content: flex-end;
   justify-self: end;
   font-size: $font-size-sm;
+  overflow-wrap: anywhere;
+  text-align: right;
 }
 
 .divider {
@@ -67,9 +85,14 @@
 
 .contact {
   color: var(--color-navy);
+  font-size: $font-size-sm;
+  line-height: 1.5;
   text-align: center;
+
+  a { overflow-wrap: anywhere; }
 }
 
 @include respond-to(md) {
   .header h1 { font-size: 2.6rem; }
+  .contact { font-size: $font-size-md; }
 }
