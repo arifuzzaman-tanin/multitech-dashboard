@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Button } from '@/shared/components/actions/Button/Button'
 import { DataTable, type DataTableColumn } from '@/shared/components/data-display/DataTable'
 import { Panel } from '@/shared/components/data-display/Panel'
@@ -88,97 +88,120 @@ interface FleetTopologyProps {
 }
 
 export function FleetTopology({ topology }: FleetTopologyProps) {
+  const fullscreenRootRef = useRef<HTMLDivElement>(null)
   const [view, setView] = useState<'topology' | 'list'>('topology')
+  const [isFullscreen, setIsFullscreen] = useState(false)
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(document.fullscreenElement === fullscreenRootRef.current)
+    }
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange)
+
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange)
+    }
+  }, [])
+
+  const handleToggleFullscreen = async () => {
+    if (document.fullscreenElement === fullscreenRootRef.current) {
+      await document.exitFullscreen()
+      return
+    }
+
+    await fullscreenRootRef.current?.requestFullscreen()
+  }
 
   return (
-    <Panel
-      title="Fleet Topology"
-      actions={
-        <div className={styles.toolbar}>
-          <span>View:</span>
-          <button
-            className={view === 'topology' ? styles.activeControl : ''}
-            onClick={() => setView('topology')}
-            type="button"
-          >
-            Topology
-          </button>
-          <button
-            className={view === 'list' ? styles.activeControl : ''}
-            onClick={() => setView('list')}
-            type="button"
-          >
-            List
-          </button>
-          <button type="button">Filter</button>
-          <button aria-label="Zoom in topology" disabled type="button">+</button>
-          <button aria-label="Zoom out topology" disabled type="button">−</button>
-        </div>
-      }
-    >
-      <div className={styles.legend} aria-label="Fleet topology legend">
-        <div className={styles.legendHeading}>
-          <span className={styles.legendHeadingIcon} aria-hidden="true">
-            <span />
-            <span />
-            <span />
-          </span>
-          <span>
-            <strong>Network key</strong>
-            <small>Live topology</small>
-          </span>
-        </div>
-        <div className={styles.legendContent}>
-          <div className={[styles.legendGroup, styles.statusLegendGroup].join(' ')}>
-            <strong className={styles.legendLabel}>Device status</strong>
-            <div className={styles.legendItems}>
-              <LegendDot label="Online" status="online" />
-              <LegendDot label="Degraded" status="degraded" />
-              <LegendDot label="Offline" status="offline" />
+    <div className={styles.topologyFullscreenRoot} ref={fullscreenRootRef}>
+      <Panel
+        title="Fleet Topology"
+        className={[
+          styles.topologyPanel,
+          isFullscreen ? styles.fullscreenPanel : '',
+        ].filter(Boolean).join(' ')}
+        actions={
+          <div className={styles.toolbar}>
+            <button
+              className={view === 'topology' ? styles.activeControl : ''}
+              onClick={() => setView('topology')}
+              type="button"
+            >
+              Topology
+            </button>
+            <button
+              className={view === 'list' ? styles.activeControl : ''}
+              onClick={() => setView('list')}
+              type="button"
+            >
+              List
+            </button>
+            <button
+              aria-pressed={isFullscreen}
+              onClick={handleToggleFullscreen}
+              type="button"
+            >
+              {isFullscreen ? 'Exit fullscreen' : 'Fullscreen'}
+            </button>
+          </div>
+        }
+      >
+        <div className={styles.legend} aria-label="Fleet topology legend">
+          <div className={styles.legendContent}>
+            <div className={[styles.legendGroup, styles.statusLegendGroup].join(' ')}>
+              <span className={styles.legendLabel}>Status</span>
+              <div className={styles.legendItems}>
+                <LegendDot label="Online" status="online" />
+                <LegendDot label="Degraded" status="degraded" />
+                <LegendDot label="Offline" status="offline" />
+              </div>
             </div>
-          </div>
-          <div className={[styles.legendGroup, styles.connectionLegendGroup].join(' ')}>
-            <strong className={styles.legendLabel}>Connection type</strong>
-            <div className={styles.legendItems}>
-              <LegendLine connection="Cellular" />
-              <LegendLine connection="LoRaWAN" />
-              <LegendLine connection="Wi-Fi" />
-              <LegendLine connection="Ethernet" />
-            </div>
-          </div>
-        </div>
-      </div>
-      {view === 'topology' ? (
-        <div className={styles.topologySurface}>
-          <div className={styles.cloudNode}>
-            <OverviewIcon name="cloud" />
-            <strong>mCloud</strong>
-          </div>
-          <div className={styles.topologyTree}>
-            <div className={styles.cloudStem} aria-hidden="true" />
-            <div className={styles.organizationBranch} aria-hidden="true" />
-            <div className={styles.topologyGrid}>
-              {topology.groups.map((group) => (
-                <TopologyColumn group={group} key={group.id} />
-              ))}
+            <div className={[styles.legendGroup, styles.connectionLegendGroup].join(' ')}>
+              <span className={styles.legendLabel}>Connection</span>
+              <div className={styles.legendItems}>
+                <LegendLine connection="Cellular" />
+                <LegendLine connection="LoRaWAN" />
+                <LegendLine connection="Wi-Fi" />
+                <LegendLine connection="Ethernet" />
+              </div>
             </div>
           </div>
         </div>
-      ) : (
-        <DataTable
-          columns={topologyColumns}
-          getRowKey={(row) => row.id}
-          rows={topology.groups}
-          emptyMessage="No topology groups found."
-        />
-      )}
-    </Panel>
+        {view === 'topology' ? (
+          <div className={styles.topologySurface}>
+            <div className={styles.topologyCanvas}>
+              <div className={styles.cloudNode}>
+                <OverviewIcon name="cloud" />
+                <strong>mCloud</strong>
+              </div>
+              <div className={styles.topologyTree}>
+                <div className={styles.cloudStem} aria-hidden="true" />
+                <div className={styles.organizationBranch} aria-hidden="true" />
+                <div className={styles.topologyGrid}>
+                  {topology.groups.map((group) => (
+                    <TopologyColumn group={group} key={group.id} />
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <DataTable
+            columns={topologyColumns}
+            getRowKey={(row) => row.id}
+            rows={topology.groups}
+            emptyMessage="No topology groups found."
+          />
+        )}
+      </Panel>
+    </div>
   )
 }
 
 function LegendDot({ label, status }: { label: string; status: OperationalStatus }) {
   return (
-    <span className={styles.legendItem}>
+    <span className={[styles.legendItem, styles.legendStatusItem, styles[`legend${formatStatus(status)}`]].join(' ')}>
       <span className={[styles.legendDot, styles[status]].join(' ')} aria-hidden="true" />
       {label}
     </span>
@@ -186,11 +209,13 @@ function LegendDot({ label, status }: { label: string; status: OperationalStatus
 }
 
 function LegendLine({ connection }: { connection: TopologySite['connection'] }) {
-  const connectionClass = styles[`connection${connection.replace('-', '')}`]
+  const connectionKey = connection.replace('-', '')
+  const connectionClass = styles[`legendConnection${connectionKey}`]
+  const connectionIcon = gatewayIconByConnection[connection]
 
   return (
-    <span className={styles.legendItem}>
-      <span className={[styles.legendLine, connectionClass].join(' ')} aria-hidden="true" />
+    <span className={[styles.legendItem, styles.legendConnectionItem, connectionClass].join(' ')}>
+      <OverviewIcon name={connectionIcon} size={16} strokeWidth={2.6} />
       {connection}
     </span>
   )
@@ -241,7 +266,7 @@ const topologyColumns: DataTableColumn<TopologyGroup>[] = [
   { id: 'devices', header: 'Devices', cell: (row) => row.deviceCount },
   { id: 'site', header: 'Site', cell: (row) => row.site.name },
   { id: 'gateway', header: 'Gateway', cell: (row) => row.site.gatewayName },
-  { id: 'status', header: 'Status', cell: (row) => <StatusBadge label={formatStatus(row.site.gatewayStatus)} tone={operationalTone[row.site.gatewayStatus]} dot /> },
+  { id: 'status', header: 'Status', cell: (row) => <StatusBadge className={styles.statusBadge} label={formatStatus(row.site.gatewayStatus)} tone={operationalTone[row.site.gatewayStatus]} dot /> },
 ]
 
 interface ActiveIncidentsProps {
@@ -250,12 +275,12 @@ interface ActiveIncidentsProps {
 }
 
 const incidentColumns: DataTableColumn<Incident>[] = [
-  { id: 'severity', header: 'Severity', cell: (row) => <StatusBadge label={formatStatus(row.severity)} tone={severityTone[row.severity]} dot /> },
+  { id: 'severity', header: 'Severity', cell: (row) => <StatusBadge className={styles.statusBadge} label={formatStatus(row.severity)} tone={severityTone[row.severity]} dot /> },
   { id: 'incident', header: 'Incident', cell: (row) => row.title },
   { id: 'site', header: 'Organization / Site', cell: (row) => `${row.organization} / ${row.site}` },
   { id: 'devices', header: 'Devices', align: 'center', cell: (row) => row.affectedDevices },
   { id: 'seen', header: 'First Seen', cell: (row) => row.firstSeen },
-  { id: 'status', header: 'Status', cell: (row) => <StatusBadge label={formatStatus(row.status)} tone={incidentStatusTone[row.status]} /> },
+  { id: 'status', header: 'Status', cell: (row) => <StatusBadge className={styles.statusBadge} label={formatStatus(row.status)} tone={incidentStatusTone[row.status]} /> },
 ]
 
 export function ActiveIncidents({ incidents, selectedIncident }: ActiveIncidentsProps) {
@@ -272,7 +297,7 @@ export function ActiveIncidents({ incidents, selectedIncident }: ActiveIncidents
       />
       <article className={styles.incidentDetail}>
         <div className={styles.detailHeader}>
-          <StatusBadge label="Critical" tone="danger" />
+          <StatusBadge className={styles.statusBadge} label="Critical" tone="danger" />
           <div>
             <h3>Gateway Offline - Detroit Plant</h3>
             <p>MTCDT-AP-0023 · Last seen: {selectedIncident.firstSeen}</p>
@@ -420,7 +445,7 @@ const gatewayColumns: DataTableColumn<FleetGateway>[] = [
   { id: 'site', header: 'Site', cell: (row) => row.site },
   { id: 'backhaul', header: 'Backhaul', cell: (row) => row.backhaul },
   { id: 'lorawan', header: 'LoRaWAN Devices', align: 'center', cell: (row) => row.lorawanDevices },
-  { id: 'status', header: 'Status', cell: (row) => <StatusBadge label={formatStatus(row.status)} tone={operationalTone[row.status]} dot /> },
+  { id: 'status', header: 'Status', cell: (row) => <StatusBadge className={styles.statusBadge} label={formatStatus(row.status)} tone={operationalTone[row.status]} dot /> },
   { id: 'seen', header: 'Last Seen', cell: (row) => row.lastSeen },
   { id: 'firmware', header: 'Firmware', cell: (row) => row.firmware },
   { id: 'cpu', header: 'CPU', cell: (row) => row.cpu },
@@ -448,7 +473,7 @@ export function SelectedGateway({ gateway }: { gateway: FleetGateway & { region:
         <div>
           <h3>{gateway.gateway}</h3>
           <p>{gateway.region}</p>
-          <StatusBadge label={formatStatus(gateway.status)} tone={operationalTone[gateway.status]} dot />
+          <StatusBadge className={styles.statusBadge} label={formatStatus(gateway.status)} tone={operationalTone[gateway.status]} dot />
         </div>
       </div>
       <div className={styles.gatewayActions}>
@@ -498,7 +523,7 @@ export function SystemHealth({ health }: { health: SystemHealthData }) {
   return (
     <Panel
       title="System Health"
-      actions={<StatusBadge label={health.statusLabel} tone={health.statusTone} dot />}
+      actions={<StatusBadge className={styles.statusBadge} label={health.statusLabel} tone={health.statusTone} dot />}
     >
       <div className={styles.healthGrid}>
         {health.items.map((item) => (

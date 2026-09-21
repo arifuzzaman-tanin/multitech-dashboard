@@ -1,4 +1,3 @@
-import { useEffect, useRef } from 'react'
 import {
   environmentStatus,
   navbarSelectors,
@@ -21,27 +20,6 @@ const environmentLabels = {
 } as const
 
 export function TopNavbar({ onMenuClick }: TopNavbarProps) {
-  const searchRef = useRef<HTMLInputElement>(null)
-
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      const isSearchShortcut = (event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k'
-
-      if (!isSearchShortcut) {
-        return
-      }
-
-      event.preventDefault()
-      searchRef.current?.focus()
-    }
-
-    window.addEventListener('keydown', handleKeyDown)
-
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown)
-    }
-  }, [])
-
   return (
     <header className={styles.navbar}>
       <div className={styles.mobileBrand}>
@@ -70,17 +48,6 @@ export function TopNavbar({ onMenuClick }: TopNavbarProps) {
           <span className={styles.statusDot} aria-hidden="true" />
           {environmentLabels[environmentStatus]}
         </span>
-      </div>
-
-      <div className={styles.searchWrap}>
-        <NavIcon name="search" size={19} />
-        <input
-          aria-label="Global search"
-          className={styles.searchInput}
-          placeholder="Search devices, gateways, sensors, sites, or organizations..."
-          ref={searchRef}
-          type="search"
-        />
       </div>
 
       <div className={styles.actions}>

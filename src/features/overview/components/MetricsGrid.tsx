@@ -30,9 +30,6 @@ export function MetricsGrid({ metrics }: MetricsGridProps) {
               </span>
             )}
           </div>
-          <svg className={styles.sparkline} viewBox="0 0 76 24" aria-hidden="true">
-            <path d="M2 18 C12 14 17 20 25 15 S39 10 48 15 61 20 74 9" />
-          </svg>
         </article>
       ))}
     </section>

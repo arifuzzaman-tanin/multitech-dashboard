@@ -13,6 +13,17 @@
   @include respond-to(lg) {
     min-height: calc(100vh - var(--app-navbar-height));
   }
+
+  h1,
+  h2,
+  h3,
+  strong,
+  b,
+  th,
+  button,
+  select {
+    font-weight: 500;
+  }
 }
 
 .operationsGrid,
@@ -78,6 +89,5 @@
     border-radius: $radius-sm;
     background: var(--color-brand);
     color: #fff;
-    font-weight: 800;
   }
 }

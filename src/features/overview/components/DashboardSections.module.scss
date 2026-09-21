@@ -21,7 +21,7 @@
   background: #f6fbff;
   color: var(--color-brand);
   font-size: $font-size-xs;
-  font-weight: 800;
+  font-weight: 500;
   cursor: pointer;
 
   &:focus-visible {
@@ -44,159 +44,123 @@
   background: transparent;
 }
 
-.legend {
-  display: grid;
-  overflow: hidden;
-  margin-bottom: $spacing-md;
-  border: 1px solid #d6e3f2;
-  border-radius: $radius-md;
-  background: #fff;
-  box-shadow: 0 2px 8px rgb(22 65 116 / 6%);
+.topologyFullscreenRoot {
+  height: 100%;
+  min-width: 0;
 
-  @include respond-to(md) {
-    grid-template-columns: 152px minmax(0, 1fr);
-  }
-
-  .legendItem {
-    min-height: 27px;
-    box-sizing: border-box;
-    padding: 4px 9px;
-    border: 1px solid #e0e9f4;
-    border-radius: $radius-sm;
-    background: #fbfdff;
-    color: #294b76;
-    font-weight: 700;
+  &:fullscreen {
+    overflow: auto;
+    padding: $spacing-md;
+    background: var(--color-surface);
   }
 }
 
-.legendHeading {
+.topologyPanel {
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.fullscreenPanel {
+  min-height: calc(100dvh - (#{$spacing-md} * 2));
+}
+
+.legend {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 11px 14px;
-  border-bottom: 1px solid #dce8f5;
-  background: #eef6ff;
-  color: #123d78;
-
-  @include respond-to(md) {
-    border-right: 1px solid #dce8f5;
-    border-bottom: 0;
-  }
-
-  > span:last-child {
-    display: grid;
-    min-width: 0;
-    gap: 1px;
-    white-space: nowrap;
-  }
-
-  strong {
-    font-size: $font-size-xs;
-  }
-
-  small {
-    color: #6480a6;
-    font-size: 10px;
-  }
-}
-
-.legendHeadingIcon {
-  display: flex;
-  width: 28px;
-  height: 28px;
-  flex: 0 0 auto;
-  align-items: flex-end;
-  justify-content: center;
-  gap: 3px;
-  padding-bottom: 7px;
-  border-radius: $radius-full;
-  background: #dcecff;
-
-  span {
-    width: 3px;
-    border-radius: $radius-full;
-    background: #1976d2;
-
-    &:nth-child(1) {
-      height: 5px;
-    }
-
-    &:nth-child(2) {
-      height: 9px;
-    }
-
-    &:nth-child(3) {
-      height: 13px;
-    }
-  }
+  margin-bottom: $spacing-sm;
 }
 
 .legendContent {
-  display: grid;
-  gap: 6px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px $spacing-lg;
   min-width: 0;
-  padding: 8px;
 }
 
 .legendGroup {
-  display: grid;
+  display: flex;
   min-width: 0;
-  gap: 6px;
-  padding: 8px 10px;
-  border-radius: $radius-sm;
-
-  @include respond-to(sm) {
-    grid-template-columns: 94px minmax(0, 1fr);
-    align-items: center;
-  }
-}
-
-.statusLegendGroup {
-  background: #f7f9fc;
-}
-
-.connectionLegendGroup {
-  background: #f1f7ff;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: $spacing-sm;
 }
 
 .legendLabel {
-  color: #718198;
-  font-size: 10px;
+  display: inline-flex;
+  align-items: center;
+  color: #6b7280;
+  font-size: $font-size-xs;
+  font-weight: 600;
   letter-spacing: 0;
-  text-transform: uppercase;
 }
 
 .legendItems {
   display: flex;
   min-width: 0;
   flex-wrap: wrap;
-  gap: 6px;
-
-  @include respond-to(sm) {
-    flex-wrap: nowrap;
-  }
+  gap: 4px 12px;
 }
 
 .legendItem {
   display: inline-flex;
   align-items: center;
+  gap: 4px;
+  min-height: 20px;
+  box-sizing: border-box;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #475569;
+  font-size: $font-size-xs;
+  font-weight: 400;
+  line-height: 1.2;
   white-space: nowrap;
 }
 
 .legendDot {
-  width: 9px;
-  height: 9px;
-  margin-right: 6px;
-  border: 2px solid #fff;
+  width: 8px;
+  height: 8px;
+  flex: 0 0 auto;
+  border: 0;
   border-radius: $radius-full;
-  box-shadow: 0 0 0 1px currentColor;
 }
 
-.legendLine {
-  width: 24px;
-  margin-right: 6px;
-  border-top: 2px dashed;
-  filter: drop-shadow(0 1px 0 rgb(255 255 255 / 90%));
+.legendStatusItem,
+.legendConnectionItem {
+  svg {
+    flex: 0 0 auto;
+  }
+}
+
+.legendOnline {
+  color: #475569;
+}
+
+.legendDegraded {
+  color: #475569;
+}
+
+.legendOffline {
+  color: #475569;
+}
+
+.legendConnectionCellular,
+.legendConnectionWiFi {
+  svg {
+    color: #0b5fa8;
+  }
+}
+
+.legendConnectionLoRaWAN {
+  svg {
+    color: #9b5100;
+  }
+}
+
+.legendConnectionEthernet {
+  svg {
+    color: #118261;
+  }
 }
 
 .online,
@@ -224,6 +188,13 @@
 .topologySurface {
   overflow-x: auto;
   padding: 2px $spacing-sm $spacing-sm;
+  overscroll-behavior-x: contain;
+}
+
+.topologyCanvas {
+  width: 760px;
+  min-width: 760px;
+  margin: 0 auto;
 }
 
 .cloudNode {
@@ -245,7 +216,7 @@
 
 .topologyTree {
   position: relative;
-  min-width: 760px;
+  width: 100%;
   padding-top: 16px;
 }
 
@@ -253,23 +224,24 @@
   position: absolute;
   top: 0;
   left: 50%;
-  width: 1px;
+  width: 0;
   height: 16px;
-  background: #3469c7;
+  border-left: 2px solid #3469c7;
+  transform: translateX(-50%);
 }
 
 .organizationBranch {
   position: absolute;
-  top: 15px;
-  right: 9.7%;
-  left: 9.7%;
-  height: 1px;
-  background: #3469c7;
+  top: 16px;
+  right: calc((100% - 32px) / 10);
+  left: calc((100% - 32px) / 10);
+  height: 0;
+  border-top: 2px solid #3469c7;
 }
 
 .topologyGrid {
   display: grid;
-  min-width: 760px;
+  width: 100%;
   grid-template-columns: repeat(5, minmax(138px, 1fr));
   gap: 8px;
 }
@@ -282,9 +254,9 @@
 }
 
 .organizationStem {
-  width: 1px;
+  width: 0;
   height: 13px;
-  background: #3469c7;
+  border-left: 2px solid #3469c7;
 }
 
 .topologyNode,
@@ -426,7 +398,7 @@
   small {
     background: transparent;
     font-size: 9px;
-    font-weight: 800;
+    font-weight: 500;
     white-space: nowrap;
   }
 }
@@ -509,6 +481,10 @@
   color: #05a660;
 }
 
+.statusBadge {
+  font-weight: 500;
+}
+
 .nextAction {
   margin-top: $spacing-sm;
   padding: $spacing-sm;
@@ -528,7 +504,7 @@
   border-radius: $radius-sm;
   background: #fff;
   color: var(--color-navy);
-  font-weight: 700;
+  font-weight: 500;
 }
 
 .lineChart {
@@ -666,7 +642,7 @@
     background: #edf6ff;
     color: var(--color-brand);
     font-size: $font-size-xs;
-    font-weight: 800;
+    font-weight: 500;
   }
 }
 

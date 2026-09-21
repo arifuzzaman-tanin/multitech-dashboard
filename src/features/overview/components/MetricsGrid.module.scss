@@ -63,7 +63,7 @@
   margin: 0;
   color: #174285;
   font-size: $font-size-xs;
-  font-weight: 700;
+  font-weight: 500;
 }
 
 .value {
@@ -76,7 +76,7 @@
 .trend {
   display: inline-flex;
   font-size: $font-size-xs;
-  font-weight: 800;
+  font-weight: 500;
 }
 
 .positive {
@@ -89,18 +89,4 @@
 
 .neutral {
   color: var(--color-text-secondary);
-}
-
-.sparkline {
-  position: absolute;
-  right: 10px;
-  bottom: 10px;
-  width: 56px;
-  height: 18px;
-
-  path {
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 2;
-  }
 }
