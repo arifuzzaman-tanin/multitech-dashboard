@@ -1158,29 +1158,147 @@
 }
 
 .mapControls {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  z-index: 1000;
   display: flex;
-  gap: $spacing-xs;
+  overflow: hidden;
+  flex-direction: column;
+  gap: 0;
+  border: 1px solid #cbd7e8;
+  border-radius: 2px;
+  background: #fff;
+  box-shadow: 0 1px 3px rgb(15 23 42 / 10%);
+
+  button {
+    width: 24px;
+    min-height: 24px;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: #fff;
+    color: #1b355e;
+    font-size: 16px;
+    font-weight: 800;
+    line-height: 1;
+    cursor: pointer;
+
+    &:hover:not(:disabled),
+    &:focus-visible {
+      background: #e8f2ff;
+    }
+
+    &:disabled {
+      color: #9aa8ba;
+      cursor: default;
+    }
+
+    + button {
+      border-top: 1px solid #d8e2ef;
+    }
+  }
+}
+
+.siteMapPanel {
+  display: grid;
+  height: 100%;
+  border-color: #dfe9f7;
+  border-radius: 3px;
+  background: #fff;
+  box-shadow: 0 2px 10px rgb(8 42 91 / 8%);
+  grid-template-rows: auto minmax(0, 1fr);
+}
+
+.siteMapContent {
+  display: flex;
+  min-height: 0;
+  flex-direction: column;
+  justify-content: center;
+  padding-top: 4px !important;
+}
+
+.siteMapHeaderActions {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.siteMapLegend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 5px 9px;
+  color: #1d3356;
+}
+
+.siteMapLegendItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 8px;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.siteMapLegendDot {
+  width: 7px;
+  height: 7px;
+  flex: 0 0 auto;
+  border-radius: $radius-full;
 }
 
 .map {
   position: relative;
-  min-height: 126px;
+  width: 100%;
+  min-height: 118px;
+  aspect-ratio: 2.45 / 1;
   overflow: hidden;
-  border-radius: $radius-sm;
-  background:
-    radial-gradient(circle at 25% 45%, #cbd5e1 0 3%, transparent 3.2%),
-    radial-gradient(circle at 49% 35%, #cbd5e1 0 5%, transparent 5.2%),
-    radial-gradient(circle at 75% 58%, #cbd5e1 0 6%, transparent 6.2%),
-    linear-gradient(#eef7ff, #f9fcff);
+  border-radius: 2px;
+  background: #b8d9f2;
+  box-shadow: inset 0 0 0 1px #9fc4e2;
 }
 
-.mapPin {
+.leafletMap {
   position: absolute;
-  width: 11px;
-  height: 11px;
-  border: 2px solid #fff;
-  border-radius: $radius-full;
-  box-shadow: 0 0 0 2px rgb(8 42 91 / 12%);
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+  pointer-events: auto;
+  touch-action: none;
+
+  &:active {
+    cursor: grabbing;
+  }
+}
+
+.leafletTiles {
+  filter: saturate(1.35) contrast(1.18) brightness(0.94);
+  pointer-events: auto;
+}
+
+@media (max-width: 520px) {
+  .siteMapHeaderActions {
+    align-items: flex-end;
+    gap: 6px;
+  }
+
+  .siteMapLegend {
+    gap: 4px 6px;
+  }
+
+  .siteMapLegendItem {
+    font-size: 7px;
+  }
+
+  .mapControls button {
+    width: 22px;
+    min-height: 22px;
+  }
 }
 
 .healthGrid {
@@ -1196,16 +1314,84 @@
 .healthCard {
   display: grid;
   gap: $spacing-sm;
-  min-height: 74px;
+  min-height: 80px;
+  align-content: center;
   padding: $spacing-sm;
   border: 1px solid #d8e7f9;
-  border-radius: $radius-sm;
-  background: #fbfdff;
+  border-radius: 6px;
+  background: linear-gradient(180deg, #fff 0%, #f7fbff 100%);
   color: #174285;
   font-size: $font-size-xs;
+  box-shadow: 0 8px 18px rgb(8 42 91 / 6%);
+}
+
+.healthCardHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: $spacing-sm;
+  min-width: 0;
+
+  span {
+    min-width: 0;
+    color: #365779;
+    font-size: 11px;
+    font-weight: 800;
+    line-height: 1.2;
+  }
 
   strong {
-    color: #05a660;
-    font-size: $font-size-md;
+    flex: 0 0 auto;
+    background: transparent;
+    font-size: 18px;
+    font-weight: 900;
+    line-height: 1;
   }
+}
+
+.healthProgress {
+  height: 7px;
+  overflow: hidden;
+  border-radius: $radius-full;
+  background: #e8f0fa;
+
+  span {
+    display: block;
+    width: var(--health-progress);
+    height: 100%;
+    border-radius: inherit;
+    background: #2575f3;
+  }
+}
+
+.healthToneSuccess {
+  color: #05834e;
+}
+
+.healthToneWarning {
+  color: #a15c00;
+}
+
+.healthToneDanger {
+  color: #d71924;
+}
+
+.healthToneInfo {
+  color: var(--color-brand);
+}
+
+.healthProgressSuccess span {
+  background: linear-gradient(90deg, #05a660 0%, #18c47a 100%);
+}
+
+.healthProgressWarning span {
+  background: linear-gradient(90deg, #f59e0b 0%, #f8bd43 100%);
+}
+
+.healthProgressDanger span {
+  background: linear-gradient(90deg, #f5222d 0%, #ff6b6f 100%);
+}
+
+.healthProgressInfo span {
+  background: linear-gradient(90deg, #2575f3 0%, #60a5fa 100%);
 }

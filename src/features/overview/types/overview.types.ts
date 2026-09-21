@@ -150,8 +150,8 @@ export interface SiteLocation {
   id: string
   name: string
   status: OperationalStatus
-  x: number
-  y: number
+  latitude: number
+  longitude: number
 }
 
 export interface RecentChange {
@@ -166,7 +166,7 @@ export interface RecentChange {
 export interface SystemHealthItem {
   id: string
   label: string
-  value: string
+  percentage: number
   tone: StatusTone
 }
 

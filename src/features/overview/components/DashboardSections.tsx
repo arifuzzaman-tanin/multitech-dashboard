@@ -1,4 +1,7 @@
-import { useEffect, useRef, useState } from 'react'
+import { type CSSProperties, useEffect, useRef, useState } from 'react'
+import type { Map as LeafletMap } from 'leaflet'
+import { CircleMarker, MapContainer, Popup, TileLayer } from 'react-leaflet'
+import 'leaflet/dist/leaflet.css'
 import { Button } from '@/shared/components/actions/Button/Button'
 import { DataTable, type DataTableColumn } from '@/shared/components/data-display/DataTable'
 import { Panel } from '@/shared/components/data-display/Panel'
@@ -51,6 +54,14 @@ const formatStatus = (value: string) =>
     .join(' ')
 
 const signalClass = (signal: string) => (signal.includes('-112') ? styles.dangerText : '')
+
+const formatPercentage = (value: number) => `${Number.isInteger(value) ? value : value.toFixed(1)}%`
+
+const getHealthProgressStyle = (percentage: number): CSSProperties => ({
+  '--health-progress': `${Math.max(0, Math.min(percentage, 100))}%`,
+}) as CSSProperties
+
+const siteMapStatusLegend: OperationalStatus[] = ['online', 'degraded', 'offline']
 
 const groupIconById: Record<string, 'bolt' | 'factory' | 'organization'> = {
   manufacturing: 'factory',
@@ -311,7 +322,7 @@ export function ActiveIncidents({ incidents, selectedIncident }: ActiveIncidents
               <StatusBadge className={styles.statusBadge} label="Critical" tone="danger" />
               <div className={styles.detailTitle}>
                 <h3>Gateway Offline - Detroit Plant</h3>
-                <p>MTCDT-AP-0023 · Last seen: {selectedIncident.firstSeen}</p>
+                <p>MTCDT-AP-0023 {'\u00B7'} Last seen: {selectedIncident.firstSeen}</p>
               </div>
               <Button className={styles.smallButton}>Diagnose</Button>
             </div>
@@ -654,23 +665,89 @@ export function SelectedGateway({ gateway }: { gateway: FleetGateway & { region:
   )
 }
 
+const markerColorByStatus: Record<OperationalStatus, string> = {
+  online: '#05a660',
+  degraded: '#f59e0b',
+  offline: '#f5222d',
+}
+
+function MapZoomControls({ map }: { map: LeafletMap }) {
+  const [zoom, setZoom] = useState(() => map.getZoom())
+
+  useEffect(() => {
+    const handleZoom = () => setZoom(map.getZoom())
+    map.on('zoomend', handleZoom)
+    return () => {
+      map.off('zoomend', handleZoom)
+    }
+  }, [map])
+
+  return (
+    <div className={styles.mapControls}>
+      <button aria-label="Zoom in map" disabled={zoom >= map.getMaxZoom()} onClick={() => map.zoomIn()} type="button">+</button>
+      <button aria-label="Zoom out map" disabled={zoom <= map.getMinZoom()} onClick={() => map.zoomOut()} type="button">-</button>
+    </div>
+  )
+}
+
 export function SiteMap({ sites }: { sites: SiteLocation[] }) {
+  const [map, setMap] = useState<LeafletMap | null>(null)
+
   return (
     <Panel
       title="Site Map"
-      className={styles.visualizationPanel}
-      contentClassName={styles.centeredVisualizationContent}
-      actions={<div className={styles.mapControls}><button aria-label="Zoom in map" type="button">+</button><button aria-label="Zoom out map" type="button">−</button></div>}
+      className={styles.siteMapPanel}
+      contentClassName={styles.siteMapContent}
+      actions={(
+        <div className={styles.siteMapHeaderActions}>
+          <div className={styles.siteMapLegend} aria-label="Site status legend">
+            {siteMapStatusLegend.map((status) => (
+              <span className={styles.siteMapLegendItem} key={status}>
+                <span className={[styles.siteMapLegendDot, styles[status]].join(' ')} aria-hidden="true" />
+                {formatStatus(status)}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
     >
-      <div className={styles.map} role="img" aria-label="Map showing monitored sites across North America, Europe, and Asia Pacific.">
-        {sites.map((site) => (
-          <span
-            className={[styles.mapPin, styles[site.status]].join(' ')}
-            key={site.id}
-            style={{ left: `${site.x}%`, top: `${site.y}%` }}
-            title={`${site.name}: ${formatStatus(site.status)}`}
+      <div className={styles.map} role="region" aria-label="Interactive OpenStreetMap showing monitored sites across North America, Europe, and Asia Pacific.">
+        <MapContainer
+          boxZoom
+          center={[22, 5]}
+          className={styles.leafletMap}
+          doubleClickZoom
+          dragging
+          keyboard
+          maxZoom={18}
+          minZoom={1}
+          ref={setMap}
+          scrollWheelZoom
+          touchZoom
+          worldCopyJump
+          zoom={1}
+          zoomControl={false}
+        >
+          <TileLayer
+            attribution="&copy; OpenStreetMap contributors"
+            className={styles.leafletTiles}
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
-        ))}
+          {sites.map((site) => (
+            <CircleMarker
+              center={[site.latitude, site.longitude]}
+              key={site.id}
+              pathOptions={{ color: '#ffffff', fillColor: markerColorByStatus[site.status], fillOpacity: 1, weight: 2 }}
+              radius={6}
+            >
+              <Popup>
+                <strong>{site.name}</strong><br />
+                Status: {formatStatus(site.status)}
+              </Popup>
+            </CircleMarker>
+          ))}
+        </MapContainer>
+        {map && <MapZoomControls map={map} />}
       </div>
     </Panel>
   )
@@ -701,8 +778,21 @@ export function SystemHealth({ health }: { health: SystemHealthData }) {
       <div className={styles.healthGrid}>
         {health.items.map((item) => (
           <article className={styles.healthCard} key={item.id}>
-            <span>{item.label}</span>
-            <strong className={styles[item.tone]}>{item.value}</strong>
+            <div className={styles.healthCardHeader}>
+              <span>{item.label}</span>
+              <strong className={styles[`healthTone${formatStatus(item.tone)}`]}>{formatPercentage(item.percentage)}</strong>
+            </div>
+            <div
+              aria-label={`${item.label} ${formatPercentage(item.percentage)}`}
+              aria-valuemax={100}
+              aria-valuemin={0}
+              aria-valuenow={item.percentage}
+              className={`${styles.healthProgress} ${styles[`healthProgress${formatStatus(item.tone)}`]}`}
+              role="progressbar"
+              style={getHealthProgressStyle(item.percentage)}
+            >
+              <span />
+            </div>
           </article>
         ))}
       </div>
