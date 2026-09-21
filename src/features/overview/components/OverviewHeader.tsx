@@ -19,11 +19,12 @@ export function OverviewHeader({ lastUpdatedLabel, timestampLabel }: OverviewHea
         </div>
       </div>
       <div className={styles.meta}>
-        <span className={styles.metaPill}>
+        <span className={styles.metaItem}>
+          <OverviewIcon name="calendar" size={16} />
           {timestampLabel}
         </span>
-        <span className={[styles.metaPill, styles.update].join(' ')}>
-          <span className={styles.statusDot} aria-hidden="true" />
+        <span className={[styles.metaItem, styles.update].join(' ')}>
+          <OverviewIcon name="clock" size={16} />
           {lastUpdatedLabel}
         </span>
       </div>
