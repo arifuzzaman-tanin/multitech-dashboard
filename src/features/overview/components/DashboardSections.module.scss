@@ -415,10 +415,85 @@
 
 .incidentDetail {
   margin-top: $spacing-sm;
-  padding: $spacing-sm;
-  border: 1px solid #fecaca;
-  border-radius: $radius-md;
-  background: linear-gradient(90deg, #fff7f7, #ffffff);
+  padding: 8px 10px 9px;
+  border: 2px solid #ffb6b6;
+  border-radius: 8px;
+  background: linear-gradient(90deg, #fff5f5 0%, #ffffff 48%, #fff 100%);
+  box-shadow: 0 1px 7px rgb(220 38 38 / 9%);
+}
+
+.incidentBody {
+  display: grid;
+  align-items: start;
+  gap: 10px;
+
+  @include respond-to(sm) {
+    grid-template-columns: 96px minmax(0, 1fr);
+  }
+}
+
+.incidentDevice {
+  position: relative;
+  display: none;
+  width: 88px;
+  height: 134px;
+  align-self: center;
+  justify-self: center;
+
+  @include respond-to(sm) {
+    display: block;
+  }
+}
+
+.deviceAntenna,
+.deviceAntennaSmall {
+  position: absolute;
+  bottom: 54px;
+  width: 9px;
+  border-radius: 7px 7px 0 0;
+  background: linear-gradient(90deg, #121722, #313946);
+  box-shadow: 0 1px 2px rgb(15 23 42 / 25%);
+}
+
+.deviceAntenna {
+  left: 12px;
+  height: 77px;
+}
+
+.deviceAntennaSmall {
+  right: 17px;
+  height: 55px;
+}
+
+.deviceShell {
+  position: absolute;
+  bottom: 3px;
+  left: 4px;
+  display: grid;
+  width: 75px;
+  height: 53px;
+  place-items: center;
+  border: 2px solid #cbd5e1;
+  border-radius: 7px;
+  background:
+    radial-gradient(circle at 7px 8px, #94a3b8 0 2px, transparent 3px),
+    radial-gradient(circle at calc(100% - 7px) 8px, #94a3b8 0 2px, transparent 3px),
+    radial-gradient(circle at 7px calc(100% - 8px), #94a3b8 0 2px, transparent 3px),
+    radial-gradient(circle at calc(100% - 7px) calc(100% - 8px), #94a3b8 0 2px, transparent 3px),
+    linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%);
+  box-shadow: 0 8px 14px rgb(15 23 42 / 18%);
+
+  span {
+    color: #0b72f0;
+    font-size: 8px;
+    font-weight: 900;
+    letter-spacing: 0;
+    text-transform: uppercase;
+  }
+}
+
+.incidentContent {
+  min-width: 0;
 }
 
 .detailHeader,
@@ -435,26 +510,35 @@
 
   h3 {
     color: var(--color-navy);
-    font-size: $font-size-md;
+    font-size: 15px;
+    line-height: 1.15;
   }
 
   p {
     color: #174285;
-    font-size: $font-size-xs;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 1.2;
   }
 }
 
+.detailTitle {
+  min-width: 0;
+}
+
 .smallButton {
-  min-height: 32px;
+  min-height: 30px;
   margin-left: auto;
-  padding: 0 $spacing-md;
-  font-size: $font-size-xs;
+  padding: 0 20px;
+  border-radius: 5px;
+  font-size: 11px;
+  font-weight: 800;
 }
 
 .detailGrid {
   display: grid;
-  gap: 7px;
-  margin-top: $spacing-sm;
+  gap: 9px 18px;
+  margin-top: 9px;
   grid-template-columns: repeat(2, minmax(0, 1fr));
 
   @include respond-to(md) {
@@ -466,10 +550,19 @@
   display: grid;
   gap: 1px;
   color: #174285;
-  font-size: $font-size-xs;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1.13;
+  min-width: 0;
 
   span {
-    color: #64748b;
+    color: #7a90ad;
+    font-size: 9px;
+    font-weight: 600;
+  }
+
+  strong {
+    overflow-wrap: anywhere;
   }
 }
 
@@ -482,19 +575,69 @@
 }
 
 .statusBadge {
-  font-weight: 500;
+  flex: 0 0 auto;
+  min-height: 22px;
+  padding-inline: 9px;
+  font-weight: 700;
 }
 
 .nextAction {
-  margin-top: $spacing-sm;
-  padding: $spacing-sm;
+  display: flex;
+  gap: 8px;
+  margin-top: 11px;
+  padding: 5px 7px 6px;
   border-left: 3px solid #f5222d;
   background: #fff;
   color: #174285;
-  font-size: $font-size-xs;
+  font-size: 10px;
+  line-height: 1.15;
 
   p {
-    margin: 3px 0 $spacing-sm;
+    margin: 1px 0 7px;
+    font-weight: 600;
+  }
+
+  .smallButton {
+    min-height: 22px;
+    margin-left: 0;
+    padding: 0 9px;
+    border-color: #d9e7fb;
+    border-radius: 5px;
+    background: #f8fbff;
+    color: #174285;
+    font-size: 10px;
+  }
+}
+
+.actionIcon {
+  display: inline-grid;
+  width: 19px;
+  height: 19px;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 2px solid #f59e0b;
+  border-radius: 50%;
+  color: #f5222d;
+  font-size: 12px;
+  font-weight: 900;
+  line-height: 1;
+  box-shadow: 0 0 0 2px #fff7ed;
+}
+
+@media (max-width: 520px) {
+  .detailHeader {
+    align-items: flex-start;
+  }
+
+  .smallButton {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .nextAction {
+    .smallButton {
+      width: auto;
+    }
   }
 }
 

@@ -296,32 +296,46 @@ export function ActiveIncidents({ incidents, selectedIncident }: ActiveIncidents
         emptyMessage="No active incidents."
       />
       <article className={styles.incidentDetail}>
-        <div className={styles.detailHeader}>
-          <StatusBadge className={styles.statusBadge} label="Critical" tone="danger" />
-          <div>
-            <h3>Gateway Offline - Detroit Plant</h3>
-            <p>MTCDT-AP-0023 · Last seen: {selectedIncident.firstSeen}</p>
+        <div className={styles.incidentBody}>
+          <div className={styles.incidentDevice} aria-hidden="true">
+            <div className={styles.deviceAntenna} />
+            <div className={styles.deviceAntennaSmall} />
+            <div className={styles.deviceShell}>
+              <span>MultiTech</span>
+            </div>
           </div>
-          <Button className={styles.smallButton}>Diagnose</Button>
-        </div>
-        <div className={styles.detailGrid}>
-          <KeyValue label="Model" value={selectedIncident.model} />
-          <KeyValue label="Serial" value={selectedIncident.serial} />
-          <KeyValue label="Firmware" value={selectedIncident.firmware} />
-          <KeyValue label="Site" value={selectedIncident.site} />
-          <KeyValue label="Last Seen" value={selectedIncident.lastSeen} />
-          <KeyValue label="Signal" value={selectedIncident.signal} strong />
-          <KeyValue label="Packet Loss" value={selectedIncident.packetLoss} strong />
-          <KeyValue label="Connected Sensors" value={selectedIncident.connectedSensors} strong />
-          <KeyValue label="IP Address" value={selectedIncident.ipAddress} />
-          <KeyValue label="CPU" value={selectedIncident.cpu} />
-          <KeyValue label="Memory" value={selectedIncident.memory} />
-          <KeyValue label="Uptime" value={selectedIncident.uptime} />
-        </div>
-        <div className={styles.nextAction}>
-          <strong>Recommended Next Action</strong>
-          <p>{selectedIncident.recommendedAction}</p>
-          <Button className={styles.smallButton} variant="secondary">Run Connectivity Test</Button>
+          <div className={styles.incidentContent}>
+            <div className={styles.detailHeader}>
+              <StatusBadge className={styles.statusBadge} label="Critical" tone="danger" />
+              <div className={styles.detailTitle}>
+                <h3>Gateway Offline - Detroit Plant</h3>
+                <p>MTCDT-AP-0023 · Last seen: {selectedIncident.firstSeen}</p>
+              </div>
+              <Button className={styles.smallButton}>Diagnose</Button>
+            </div>
+            <div className={styles.detailGrid}>
+              <KeyValue label="Model" value={selectedIncident.model} />
+              <KeyValue label="Serial" value={selectedIncident.serial} />
+              <KeyValue label="Firmware" value={selectedIncident.firmware} />
+              <KeyValue label="Site" value={selectedIncident.site} />
+              <KeyValue label="Last Seen" value={selectedIncident.lastSeen} />
+              <KeyValue label="Signal" value={selectedIncident.signal} strong />
+              <KeyValue label="Packet Loss" value={selectedIncident.packetLoss} strong />
+              <KeyValue label="Connected Sensors" value={selectedIncident.connectedSensors} strong />
+              <KeyValue label="IP Address" value={selectedIncident.ipAddress} />
+              <KeyValue label="CPU" value={selectedIncident.cpu} />
+              <KeyValue label="Memory" value={selectedIncident.memory} />
+              <KeyValue label="Uptime" value={selectedIncident.uptime} />
+            </div>
+            <div className={styles.nextAction}>
+              <span className={styles.actionIcon} aria-hidden="true">!</span>
+              <div>
+                <strong>Recommended Next Action</strong>
+                <p>{selectedIncident.recommendedAction}</p>
+                <Button className={styles.smallButton} variant="secondary">Run Connectivity Test</Button>
+              </div>
+            </div>
+          </div>
         </div>
       </article>
     </Panel>

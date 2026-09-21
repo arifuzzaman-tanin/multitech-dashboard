@@ -1,4 +1,4 @@
-import { Button } from '@/shared/components/actions/Button/Button'
+import { OverviewIcon } from './OverviewIcon'
 import styles from './OverviewHeader.module.scss'
 
 interface OverviewHeaderProps {
@@ -10,20 +10,22 @@ export function OverviewHeader({ lastUpdatedLabel, timestampLabel }: OverviewHea
   return (
     <header className={styles.header}>
       <div className={styles.copy}>
-        <div className={styles.titleRow}>
+        <div className={styles.icon}>
+          <OverviewIcon name="factory" size={22} />
+        </div>
+        <div className={styles.titleGroup}>
           <h1>Fleet Operations</h1>
           <p>Monitor connectivity, telemetry, device health, and incidents across organizations.</p>
         </div>
       </div>
       <div className={styles.meta}>
-        <span>{timestampLabel}</span>
-        <span className={styles.update}>
-          <span aria-hidden="true" />
+        <span className={styles.metaPill}>
+          {timestampLabel}
+        </span>
+        <span className={[styles.metaPill, styles.update].join(' ')}>
+          <span className={styles.statusDot} aria-hidden="true" />
           {lastUpdatedLabel}
         </span>
-        <Button className={styles.exportButton} variant="primary">
-          Export
-        </Button>
       </div>
     </header>
   )

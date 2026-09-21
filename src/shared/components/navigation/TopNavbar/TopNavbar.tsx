@@ -1,5 +1,4 @@
 import {
-  environmentStatus,
   navbarSelectors,
   navbarUser,
   notificationCount,
@@ -12,12 +11,6 @@ import styles from './TopNavbar.module.scss'
 interface TopNavbarProps {
   onMenuClick: () => void
 }
-
-const environmentLabels = {
-  production: 'Production',
-  staging: 'Staging',
-  development: 'Development',
-} as const
 
 export function TopNavbar({ onMenuClick }: TopNavbarProps) {
   return (
@@ -40,14 +33,6 @@ export function TopNavbar({ onMenuClick }: TopNavbarProps) {
         {navbarSelectors.map((selector) => (
           <NavbarSelector key={selector.id} selector={selector} />
         ))}
-        <span
-          aria-label={`Environment status: ${environmentLabels[environmentStatus]}`}
-          className={styles.environment}
-          role="status"
-        >
-          <span className={styles.statusDot} aria-hidden="true" />
-          {environmentLabels[environmentStatus]}
-        </span>
       </div>
 
       <div className={styles.actions}>

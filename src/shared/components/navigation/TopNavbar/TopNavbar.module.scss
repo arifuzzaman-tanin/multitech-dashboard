@@ -88,8 +88,7 @@
   }
 }
 
-.selector,
-.environment {
+.selector {
   display: inline-flex;
   min-height: 40px;
   align-items: center;
@@ -115,21 +114,6 @@
   background: transparent;
   color: inherit;
   font: inherit;
-}
-
-.environment {
-  flex: 0 0 auto;
-  padding: 0 $spacing-md;
-  background: #daf5e5;
-  color: #16854b;
-}
-
-.statusDot {
-  width: 8px;
-  height: 8px;
-  border-radius: $radius-full;
-  background: currentColor;
-  box-shadow: 0 0 0 3px rgb(22 133 75 / 14%);
 }
 
 .actions {
