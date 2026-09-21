@@ -19,6 +19,7 @@ export interface OverviewMetric {
 export type OverviewIconName =
   | 'air'
   | 'alert'
+  | 'arrow-right'
   | 'bolt'
   | 'calendar'
   | 'cellular'

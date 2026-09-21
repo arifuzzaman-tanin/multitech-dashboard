@@ -13,6 +13,7 @@ import type {
   IncidentStatus,
   OperationalStatus,
   OrganizationHealthRow,
+  OverviewIconName,
   RecentChange,
   Severity,
   SiteLocation,
@@ -588,27 +589,67 @@ export function TelemetryFleet({ gateways }: { gateways: FleetGateway[] }) {
   )
 }
 
+interface GatewayAction {
+  label: string
+  icon: OverviewIconName
+}
+
+const selectedGatewayActions: GatewayAction[] = [
+  { label: 'Restart Service', icon: 'flow' },
+  { label: 'Reboot Gateway', icon: 'clock' },
+  { label: 'Sync Config', icon: 'cloud' },
+  { label: 'Run Connectivity Test', icon: 'wifi' },
+  { label: 'View Logs', icon: 'database' },
+  { label: 'Deploy Firmware', icon: 'device' },
+]
+
 export function SelectedGateway({ gateway }: { gateway: FleetGateway & { region: string } }) {
   return (
-    <Panel title="Selected Gateway" actions={<button className={styles.linkButton} type="button">View Audit Trail</button>}>
-      <div className={styles.gatewaySummary}>
-        <div className={styles.gatewayDevice} aria-hidden="true">
-          <span />
-          <span />
-          <span />
+    <Panel
+      className={styles.selectedGatewayPanel}
+      contentClassName={styles.selectedGatewayContent}
+      padding="sm"
+      title="Selected Gateway"
+    >
+      <div className={styles.gatewayControls}>
+        <div className={styles.selectedGatewayMain}>
+          <div className={styles.gatewayDevice} aria-hidden="true">
+            <span className={styles.gatewayAntenna} />
+            <span className={styles.gatewayAntennaSmall} />
+            <span className={styles.gatewayBody}>
+              <span className={styles.gatewayPort} />
+              <span className={styles.gatewayPort} />
+              <span className={styles.gatewayPort} />
+              <span className={styles.gatewayLed} />
+            </span>
+          </div>
+          <div className={styles.gatewaySummary}>
+            <div className={styles.gatewayTitleRow}>
+              <h3>{gateway.gateway}</h3>
+              <StatusBadge className={styles.gatewayStatusBadge} label={formatStatus(gateway.status)} tone={operationalTone[gateway.status]} dot />
+            </div>
+            <p>{gateway.region}</p>
+          </div>
         </div>
-        <div>
-          <h3>{gateway.gateway}</h3>
-          <p>{gateway.region}</p>
-          <StatusBadge className={styles.statusBadge} label={formatStatus(gateway.status)} tone={operationalTone[gateway.status]} dot />
+        <div className={styles.gatewayActions}>
+          {selectedGatewayActions.map((action) => (
+            <button key={action.label} type="button">
+              <OverviewIcon name={action.icon} size={14} strokeWidth={2.3} />
+              <span>{action.label}</span>
+            </button>
+          ))}
         </div>
       </div>
-      <div className={styles.gatewayActions}>
-        {['Restart Service', 'Reboot Gateway', 'Sync Config', 'Run Connectivity Test', 'View Logs', 'Deploy Firmware'].map((action) => (
-          <button key={action} type="button">{action}</button>
-        ))}
+      <div className={styles.gatewayAuditBar}>
+        <p className={styles.auditNote}>
+          <OverviewIcon name="clock" size={13} strokeWidth={2.1} />
+          <span>All actions are logged and audited</span>
+        </p>
+        <button className={styles.auditTrailButton} type="button">
+          <span>View Audit Trail</span>
+          <OverviewIcon name="arrow-right" size={13} strokeWidth={2.2} />
+        </button>
       </div>
-      <p className={styles.auditNote}>All actions are logged and audited</p>
     </Panel>
   )
 }

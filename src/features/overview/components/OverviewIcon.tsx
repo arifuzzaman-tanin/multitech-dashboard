@@ -9,6 +9,7 @@ interface OverviewIconProps extends SVGProps<SVGSVGElement> {
 const paths: Record<OverviewIconName, ReactElement> = {
   air: <path d="M4 8h9a3 3 0 1 0-3-3M4 13h13a3 3 0 1 1-3 3M4 18h6" />,
   alert: <path d="M12 4 3.5 19h17L12 4ZM12 9v4M12 16h.01" />,
+  'arrow-right': <path d="M5 12h14M14 7l5 5-5 5" />,
   bolt: <path d="m13 2-8 12h6l-1 8 9-13h-6l1-7Z" />,
   calendar: <path d="M6 3v3M18 3v3M4 8h16M5 5h14a1 1 0 0 1 1 1v14H4V6a1 1 0 0 1 1-1ZM8 12h.01M12 12h.01M16 12h.01M8 16h.01M12 16h.01M16 16h.01" />,
   cellular: <path d="M12 20h.01M7.8 16.2a6 6 0 0 1 8.4 0M5 12.9a10 10 0 0 1 14 0M2.5 9.4a14 14 0 0 1 19 0" />,
