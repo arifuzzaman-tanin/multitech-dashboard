@@ -1,0 +1,61 @@
+@use '@/assets/styles/abstracts' as *;
+
+.header {
+  display: grid;
+  gap: $spacing-sm;
+  align-items: center;
+
+  @include respond-to(xl) {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+}
+
+.titleRow {
+  display: flex;
+  min-width: 0;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: $spacing-sm $spacing-md;
+
+  h1 {
+    margin: 0;
+    color: var(--color-navy);
+    font-size: clamp(1.4rem, 2vw, 2rem);
+    line-height: 1.1;
+  }
+
+  p {
+    margin: 0;
+    color: #174285;
+    font-size: $font-size-sm;
+  }
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: $spacing-sm;
+  color: #0c3070;
+  font-size: $font-size-xs;
+}
+
+.update {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  span {
+    width: 8px;
+    height: 8px;
+    border-radius: $radius-full;
+    background: #05a660;
+  }
+}
+
+.exportButton {
+  min-height: 36px;
+  gap: $spacing-xs;
+  padding: 0 $spacing-md;
+  font-size: $font-size-xs;
+}
