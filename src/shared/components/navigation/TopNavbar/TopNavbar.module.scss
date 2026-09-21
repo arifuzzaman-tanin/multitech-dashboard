@@ -5,6 +5,7 @@
   z-index: $z-sticky;
   top: 0;
   display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   min-height: var(--app-navbar-height);
   align-items: center;
   gap: $spacing-sm;
@@ -15,21 +16,29 @@
   backdrop-filter: blur(14px);
 
   @include respond-to(md) {
-    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-columns: auto minmax(0, 1fr) auto;
     gap: $spacing-md;
     padding: $spacing-sm $spacing-lg;
   }
 }
 
-.mobileBrand {
+.filterOpen {
+  grid-template-columns: auto minmax(0, 1fr) auto;
+
+  @include respond-to(md) {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+  }
+}
+
+.brand {
   display: flex;
   min-width: 0;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: $spacing-sm;
 
   @include respond-to(md) {
-    display: none;
+    justify-content: flex-start;
   }
 }
 
@@ -61,10 +70,17 @@
   }
 }
 
-.mobileLogoLink {
+.menuButton {
+  @include respond-to(lg) {
+    display: none;
+  }
+}
+
+.logoLink {
   display: inline-flex;
   min-width: 0;
   align-items: center;
+  padding: $spacing-xs 0;
   border-radius: $radius-sm;
 
   &:focus-visible {
@@ -72,25 +88,36 @@
   }
 }
 
-.mobileLogo {
+.logo {
   display: block;
-  width: min(160px, 42vw);
+  width: clamp(108px, 30vw, 150px);
+
+  @include respond-to(md) {
+    width: 172px;
+  }
 }
 
 .contextControls {
   display: none;
   min-width: 0;
   align-items: center;
-  gap: $spacing-sm;
+  gap: $spacing-xs;
+
+  .filterOpen & {
+    display: flex;
+  }
 
   @include respond-to(md) {
     display: flex;
+    gap: $spacing-sm;
   }
 }
 
 .selector {
+  flex: 1 1 0;
   display: inline-flex;
   min-height: 40px;
+  min-width: 0;
   align-items: center;
   gap: $spacing-xs;
   border: 1px solid #d9e6f5;
@@ -99,16 +126,17 @@
   color: var(--color-navy);
   font-size: $font-size-sm;
   font-weight: 700;
-}
+  padding: 0 $spacing-xs 0 $spacing-sm;
 
-.selector {
-  min-width: 0;
-  padding: 0 $spacing-sm 0 $spacing-md;
+  @include respond-to(md) {
+    flex: 0 1 auto;
+    padding: 0 $spacing-sm 0 $spacing-md;
+  }
 }
 
 .selectorControl {
+  width: 100%;
   min-width: 0;
-  max-width: 160px;
   border: 0;
   outline: 0;
   background: transparent;
@@ -122,6 +150,35 @@
   align-items: center;
   justify-content: flex-end;
   gap: $spacing-xs;
+  white-space: nowrap;
+}
+
+.filterOpen {
+  .logoLink,
+  .actions .iconButton:not(.filterButton),
+  .profileButton {
+    display: none;
+  }
+
+  @include respond-to(md) {
+    .logoLink {
+      display: inline-flex;
+    }
+
+    .actions .iconButton:not(.filterButton) {
+      display: grid;
+    }
+
+    .profileButton {
+      display: inline-flex;
+    }
+  }
+}
+
+.filterButton {
+  @include respond-to(md) {
+    display: none;
+  }
 }
 
 .notificationBadge {

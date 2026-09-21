@@ -10,6 +10,7 @@ interface AppShellProps {
 
 export function AppShell({ children, currentPath }: AppShellProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false)
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -37,15 +38,28 @@ export function AppShell({ children, currentPath }: AppShellProps) {
     setIsSidebarOpen(false)
   }
 
+  const toggleSidebarCollapsed = () => {
+    setIsSidebarCollapsed((currentValue) => !currentValue)
+  }
+
+  const workspaceClasses = [
+    styles.workspace,
+    isSidebarCollapsed ? styles.workspaceCollapsed : '',
+  ]
+    .filter(Boolean)
+    .join(' ')
+
   return (
     <div className={styles.shell}>
       <Sidebar
         currentPath={currentPath}
+        isCollapsed={isSidebarCollapsed}
         isOpen={isSidebarOpen}
         onClose={closeSidebar}
+        onCollapsedChange={toggleSidebarCollapsed}
         onNavigate={closeSidebar}
       />
-      <div className={styles.workspace}>
+      <div className={workspaceClasses}>
         <TopNavbar onMenuClick={() => setIsSidebarOpen(true)} />
         <main className={styles.main}>{children}</main>
       </div>

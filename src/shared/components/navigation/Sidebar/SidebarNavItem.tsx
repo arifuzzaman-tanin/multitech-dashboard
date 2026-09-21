@@ -5,11 +5,13 @@ import styles from './Sidebar.module.scss'
 interface SidebarNavItemProps {
   item: NavigationItem
   currentPath: string
+  isCollapsed?: boolean
   onNavigate?: () => void
 }
 
 export function SidebarNavItem({
   currentPath,
+  isCollapsed = false,
   item,
   onNavigate,
 }: SidebarNavItemProps) {
@@ -36,15 +38,22 @@ export function SidebarNavItem({
     <li>
       {item.path && !item.disabled ? (
         <a
+          aria-label={isCollapsed ? item.label : undefined}
           aria-current={isActive ? 'page' : undefined}
           className={itemClasses}
           href={item.path}
           onClick={onNavigate}
+          title={isCollapsed ? item.label : undefined}
         >
           {content}
         </a>
       ) : (
-        <span className={itemClasses} aria-disabled={item.disabled || undefined}>
+        <span
+          aria-disabled={item.disabled || undefined}
+          aria-label={isCollapsed ? item.label : undefined}
+          className={itemClasses}
+          title={isCollapsed ? item.label : undefined}
+        >
           {content}
         </span>
       )}

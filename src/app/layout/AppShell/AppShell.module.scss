@@ -2,6 +2,7 @@
 
 :root {
   --app-sidebar-width: 208px;
+  --app-sidebar-collapsed-width: 72px;
   --app-navbar-height: 64px;
 }
 
@@ -14,9 +15,16 @@
 
 .workspace {
   min-width: 0;
+  transition: margin-left $transition-normal;
 
   @include respond-to(lg) {
     margin-left: var(--app-sidebar-width);
+  }
+}
+
+.workspaceCollapsed {
+  @include respond-to(lg) {
+    margin-left: var(--app-sidebar-collapsed-width);
   }
 }
 

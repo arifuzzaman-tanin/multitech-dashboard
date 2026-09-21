@@ -1,4 +1,3 @@
-import multitechLogoUrl from '@/assets/images/multitech-logo.svg'
 import { navigationItems } from '@/app/config/navigation'
 import { NavIcon } from '@/shared/components/navigation/icons'
 import { SidebarNavItem } from './SidebarNavItem'
@@ -6,19 +5,24 @@ import styles from './Sidebar.module.scss'
 
 interface SidebarProps {
   currentPath: string
+  isCollapsed?: boolean
   isOpen?: boolean
+  onCollapsedChange?: () => void
   onClose?: () => void
   onNavigate?: () => void
 }
 
 export function Sidebar({
   currentPath,
+  isCollapsed = false,
   isOpen = false,
+  onCollapsedChange,
   onClose,
   onNavigate,
 }: SidebarProps) {
   const sidebarClasses = [
     styles.sidebar,
+    isCollapsed ? styles.collapsed : '',
     isOpen ? styles.open : '',
   ]
     .filter(Boolean)
@@ -33,9 +37,15 @@ export function Sidebar({
       />
       <aside aria-label="Primary navigation" className={sidebarClasses}>
         <div className={styles.header}>
-          <a className={styles.logoLink} href="/dashboard" onClick={onNavigate}>
-            <img className={styles.logo} src={multitechLogoUrl} alt="MultiTech" />
-          </a>
+          <button
+            aria-label={isCollapsed ? 'Expand navigation' : 'Collapse navigation'}
+            aria-pressed={isCollapsed}
+            className={styles.collapseButton}
+            onClick={onCollapsedChange}
+            type="button"
+          >
+            <NavIcon name={isCollapsed ? 'sidebarExpand' : 'sidebarCollapse'} size={20} />
+          </button>
           <button
             aria-label="Close navigation"
             className={styles.closeButton}
@@ -51,6 +61,7 @@ export function Sidebar({
             {navigationItems.map((item) => (
               <SidebarNavItem
                 currentPath={currentPath}
+                isCollapsed={isCollapsed}
                 item={item}
                 key={item.id}
                 onNavigate={onNavigate}

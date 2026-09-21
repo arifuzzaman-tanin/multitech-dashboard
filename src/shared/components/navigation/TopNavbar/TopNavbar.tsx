@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import {
   navbarSelectors,
   navbarUser,
@@ -13,9 +14,15 @@ interface TopNavbarProps {
 }
 
 export function TopNavbar({ onMenuClick }: TopNavbarProps) {
+  const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false)
+
+  const handleFilterClick = () => {
+    setIsMobileFilterOpen((currentValue) => !currentValue)
+  }
+
   return (
-    <header className={styles.navbar}>
-      <div className={styles.mobileBrand}>
+    <header className={`${styles.navbar} ${isMobileFilterOpen ? styles.filterOpen : ''}`}>
+      <div className={styles.brand}>
         <button
           aria-label="Open navigation"
           className={styles.menuButton}
@@ -24,8 +31,8 @@ export function TopNavbar({ onMenuClick }: TopNavbarProps) {
         >
           <NavIcon name="menu" />
         </button>
-        <a className={styles.mobileLogoLink} href="/dashboard">
-          <img className={styles.mobileLogo} src={multitechLogoUrl} alt="MultiTech" />
+        <a className={styles.logoLink} href="/dashboard">
+          <img className={styles.logo} src={multitechLogoUrl} alt="MultiTech" />
         </a>
       </div>
 
@@ -37,6 +44,16 @@ export function TopNavbar({ onMenuClick }: TopNavbarProps) {
 
       <div className={styles.actions}>
         <button
+          aria-label={isMobileFilterOpen ? 'Close navbar filters' : 'Open navbar filters'}
+          aria-expanded={isMobileFilterOpen}
+          className={`${styles.iconButton} ${styles.filterButton}`}
+          title={isMobileFilterOpen ? 'Close filters' : 'Filters'}
+          type="button"
+          onClick={handleFilterClick}
+        >
+          <NavIcon name={isMobileFilterOpen ? 'x' : 'filter'} />
+        </button>
+        <button
           aria-label={`Notifications${notificationCount ? `, ${notificationCount} unread` : ''}`}
           className={styles.iconButton}
           title="Notifications"
@@ -46,14 +63,6 @@ export function TopNavbar({ onMenuClick }: TopNavbarProps) {
           {notificationCount > 0 && (
             <span className={styles.notificationBadge}>{notificationCount}</span>
           )}
-        </button>
-        <button
-          aria-label="Help"
-          className={styles.iconButton}
-          title="Help"
-          type="button"
-        >
-          <NavIcon name="help" />
         </button>
         <button
           aria-label={`Open profile menu for ${navbarUser.name}`}
@@ -67,7 +76,6 @@ export function TopNavbar({ onMenuClick }: TopNavbarProps) {
             <span className={styles.profileName}>{navbarUser.name}</span>
             <span className={styles.profileRole}>{navbarUser.role}</span>
           </span>
-          <NavIcon name="chevronDown" size={16} />
         </button>
       </div>
     </header>
