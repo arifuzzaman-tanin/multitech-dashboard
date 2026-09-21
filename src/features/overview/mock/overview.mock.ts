@@ -149,11 +149,11 @@ export const overviewMockData: OverviewDashboardData = {
     { label: 'Apr 28 12:00', temperature: 71, humidity: 41, vibration: 85, power: 74, messages: 82, alerts: 14 },
   ],
   connectivity: [
-    { id: 'lorawan', label: 'LoRaWAN', percentage: 42.3, count: 5436, color: '#0b72f0' },
-    { id: 'cellular', label: 'Cellular (4G/5G)', percentage: 28.1, count: 3610, color: '#2da8ff' },
-    { id: 'private-lte', label: 'Private LTE', percentage: 12.4, count: 1592, color: '#11b981' },
-    { id: 'wifi', label: 'Wi-Fi', percentage: 9.1, count: 1169, color: '#60a5fa' },
-    { id: 'ethernet', label: 'Ethernet', percentage: 8.1, count: 1039, color: '#0369a1' },
+    { id: 'lorawan', label: 'LoRaWAN', percentage: 42.3, count: 5436, color: '#2f75ee' },
+    { id: 'cellular', label: 'Cellular (4G/5G)', percentage: 28.1, count: 3610, color: '#2a8fbd' },
+    { id: 'private-lte', label: 'Private LTE', percentage: 12.4, count: 1592, color: '#63d2c1' },
+    { id: 'wifi', label: 'Wi-Fi', percentage: 9.1, count: 1169, color: '#48b68e' },
+    { id: 'ethernet', label: 'Ethernet', percentage: 8.1, count: 1039, color: '#2d86be' },
   ],
   organizationHealth: [
     { id: 'north-america', organizationName: 'North America', onlinePercentage: 96.8, criticalAlerts: 5, gateways: 112, sensors: 3421, dataRate: '5.2 MBs' },

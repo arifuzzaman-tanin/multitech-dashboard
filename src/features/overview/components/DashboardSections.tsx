@@ -121,6 +121,7 @@ export function FleetTopology({ topology }: FleetTopologyProps) {
           styles.topologyPanel,
           isFullscreen ? styles.fullscreenPanel : '',
         ].filter(Boolean).join(' ')}
+        contentClassName={styles.centeredVisualizationContent}
         actions={
           <div className={styles.toolbar}>
             <button
@@ -355,51 +356,159 @@ export function TelemetryTrends({ points }: { points: TelemetryPoint[] }) {
   return (
     <Panel
       title="Telemetry & Alert Trends"
+      className={styles.telemetryPanel}
+      contentClassName={styles.centeredVisualizationContent}
       actions={<select className={styles.select} aria-label="Telemetry trend time range"><option>Last 24 hours</option></select>}
     >
       <div className={styles.chartLegend}>
-        <LegendDot label="Temperature (°C)" status="online" />
-        <LegendDot label="Humidity (%)" status="degraded" />
-        <LegendDot label="Messages/sec" status="online" />
-        <LegendDot label="Alerts" status="offline" />
+        <ChartLegendItem color="temperature" label={'Temperature (\u00b0C)'} />
+        <ChartLegendItem color="humidity" label="Humidity (%)" />
+        <ChartLegendItem color="vibration" label="Vibration (mm/s)" />
+        <ChartLegendItem color="power" label="Power (kW)" />
+        <ChartLegendItem color="messages" label="Messages/sec" />
+        <ChartLegendItem color="alerts" label="Alerts" />
       </div>
-      <LineChart points={points} />
+      <div className={styles.chartFrame}>
+        <LineChart points={points} />
+      </div>
     </Panel>
   )
 }
 
+type TelemetrySeriesKey = keyof Pick<TelemetryPoint, 'temperature' | 'humidity' | 'vibration' | 'power' | 'messages'>
+
+type ChartLegendColor = TelemetrySeriesKey | 'alerts'
+
+const chartSeries: Array<{ className: string; key: TelemetrySeriesKey }> = [
+  { key: 'temperature', className: styles.seriesGreen },
+  { key: 'humidity', className: styles.seriesCyan },
+  { key: 'vibration', className: styles.seriesVibration },
+  { key: 'power', className: styles.seriesAmber },
+  { key: 'messages', className: styles.seriesBlue },
+]
+
+function ChartLegendItem({ color, label }: { color: ChartLegendColor; label: string }) {
+  return (
+    <span className={styles.chartLegendItem}>
+      <span className={[styles.chartLegendDot, styles[`chartLegend${formatStatus(color)}`]].join(' ')} aria-hidden="true" />
+      {label}
+    </span>
+  )
+}
+
+const formatAxisLabel = (label: string) => {
+  const [month = '', day = '', time = ''] = label.split(' ')
+
+  return { date: `${month} ${day}`.trim(), time }
+}
+
+const useElementWidth = () => {
+  const elementRef = useRef<HTMLDivElement>(null)
+  const [width, setWidth] = useState(0)
+
+  useEffect(() => {
+    const element = elementRef.current
+
+    if (!element) {
+      return
+    }
+
+    const updateWidth = () => {
+      setWidth(element.getBoundingClientRect().width)
+    }
+
+    updateWidth()
+
+    const resizeObserver = new ResizeObserver(([entry]) => {
+      setWidth(entry.contentRect.width)
+    })
+
+    resizeObserver.observe(element)
+
+    return () => {
+      resizeObserver.disconnect()
+    }
+  }, [])
+
+  return { elementRef, width }
+}
+
 function LineChart({ points }: { points: TelemetryPoint[] }) {
-  const width = 720
-  const height = 170
+  const { elementRef, width: containerWidth } = useElementWidth()
+  const isCompact = containerWidth > 0 && containerWidth < 560
+  const width = isCompact ? 560 : 720
+  const height = isCompact ? 188 : 158
+  const margin = isCompact
+    ? { bottom: 42, left: 30, right: 28, top: 10 }
+    : { bottom: 30, left: 34, right: 34, top: 8 }
+  const plotWidth = width - margin.left - margin.right
+  const plotHeight = height - margin.top - margin.bottom
   const maxValue = 100
-  const xStep = width / Math.max(points.length - 1, 1)
-  const toPath = (key: keyof Pick<TelemetryPoint, 'temperature' | 'humidity' | 'vibration' | 'power' | 'messages'>) =>
+  const maxAlerts = 30
+  const xLabelStep = isCompact ? 4 : 2
+  const alertBarWidth = isCompact ? 6 : 8
+  const xStep = plotWidth / Math.max(points.length - 1, 1)
+  const toX = (index: number) => margin.left + index * xStep
+  const toY = (value: number) => margin.top + plotHeight - (value / maxValue) * plotHeight
+  const toAlertHeight = (value: number) => (value / maxAlerts) * plotHeight
+  const toPath = (key: TelemetrySeriesKey) =>
     points
       .map((point, index) => {
-        const x = index * xStep
-        const y = height - (point[key] / maxValue) * (height - 30) - 15
+        const x = toX(index)
+        const y = toY(point[key])
         return `${index === 0 ? 'M' : 'L'} ${x.toFixed(1)} ${y.toFixed(1)}`
       })
       .join(' ')
+  const xLabels = points.filter((_, index) => index % xLabelStep === 0)
 
   return (
-    <svg className={styles.lineChart} viewBox={`0 0 ${width} ${height}`} role="img" aria-label="Telemetry trends for temperature, humidity, vibration, power, messages, and alerts over the last 24 hours.">
-      {[25, 50, 75, 100].map((tick) => (
-        <line key={tick} x1="0" x2={width} y1={height - (tick / 100) * (height - 30) - 15} y2={height - (tick / 100) * (height - 30) - 15} />
-      ))}
-      <path className={styles.seriesBlue} d={toPath('messages')} />
-      <path className={styles.seriesGreen} d={toPath('temperature')} />
-      <path className={styles.seriesCyan} d={toPath('humidity')} />
-      <path className={styles.seriesAmber} d={toPath('power')} />
-      {points.map((point, index) => {
-        const barHeight = point.alerts * 3
-        return <rect className={styles.alertBar} height={barHeight} key={point.label} width="10" x={index * xStep + 4} y={height - barHeight - 4} />
-      })}
-    </svg>
+    <div className={styles.lineChartSizer} ref={elementRef}>
+      <svg className={styles.lineChart} viewBox={`0 0 ${width} ${height}`} role="img" aria-label="Telemetry trends for temperature, humidity, vibration, power, messages, and alerts over the last 24 hours.">
+        {[0, 25, 50, 75, 100].map((tick) => (
+          <g key={tick}>
+            <line x1={margin.left} x2={width - margin.right} y1={toY(tick)} y2={toY(tick)} />
+            <text className={styles.axisLabel} textAnchor="end" x={margin.left - 8} y={toY(tick) + 3}>{tick}</text>
+          </g>
+        ))}
+        {[0, 10, 20, 30].map((tick) => (
+          <text className={styles.axisLabel} key={tick} x={width - margin.right + 10} y={margin.top + plotHeight - (tick / maxAlerts) * plotHeight + 3}>{tick}</text>
+        ))}
+        {xLabels.map((point, labelIndex) => {
+          const originalIndex = labelIndex * xLabelStep
+          const label = formatAxisLabel(point.label)
+
+          return (
+            <text className={styles.xAxisLabel} key={point.label} textAnchor="middle" x={toX(originalIndex)} y={height - 17}>
+              <tspan x={toX(originalIndex)}>{label.date}</tspan>
+              <tspan dy="11" x={toX(originalIndex)}>{label.time}</tspan>
+            </text>
+          )
+        })}
+        {points.map((point, index) => {
+          const barHeight = toAlertHeight(point.alerts)
+
+          return (
+            <rect
+              className={styles.alertBar}
+              height={barHeight}
+              key={point.label}
+              rx="1"
+              width={alertBarWidth}
+              x={toX(index) - alertBarWidth / 2}
+              y={margin.top + plotHeight - barHeight}
+            />
+          )
+        })}
+        {chartSeries.map((series) => (
+          <path className={series.className} d={toPath(series.key)} key={series.key} />
+        ))}
+      </svg>
+    </div>
   )
 }
 
 export function ConnectivityBreakdown({ segments }: { segments: ConnectivitySegment[] }) {
+  const totalDevices = segments.reduce((total, segment) => total + segment.count, 0)
   const gradient = segments
     .reduce<{ parts: string[]; offset: number }>((acc, segment) => {
       const start = acc.offset
@@ -412,11 +521,15 @@ export function ConnectivityBreakdown({ segments }: { segments: ConnectivitySegm
     .join(', ')
 
   return (
-    <Panel title="Connectivity Breakdown">
+    <Panel
+      className={styles.connectivityPanel}
+      contentClassName={styles.centeredVisualizationContent}
+      title="Connectivity Breakdown"
+    >
       <div className={styles.donutLayout}>
         <div className={styles.donut} style={{ background: `conic-gradient(${gradient})` }} aria-label="Connectivity device breakdown chart">
-          <div>
-            <strong>12,846</strong>
+          <div className={styles.donutCenter}>
+            <strong>{totalDevices.toLocaleString()}</strong>
             <span>Devices</span>
           </div>
         </div>
@@ -502,7 +615,12 @@ export function SelectedGateway({ gateway }: { gateway: FleetGateway & { region:
 
 export function SiteMap({ sites }: { sites: SiteLocation[] }) {
   return (
-    <Panel title="Site Map" actions={<div className={styles.mapControls}><button aria-label="Zoom in map" type="button">+</button><button aria-label="Zoom out map" type="button">−</button></div>}>
+    <Panel
+      title="Site Map"
+      className={styles.visualizationPanel}
+      contentClassName={styles.centeredVisualizationContent}
+      actions={<div className={styles.mapControls}><button aria-label="Zoom in map" type="button">+</button><button aria-label="Zoom out map" type="button">−</button></div>}
+    >
       <div className={styles.map} role="img" aria-label="Map showing monitored sites across North America, Europe, and Asia Pacific.">
         {sites.map((site) => (
           <span
@@ -550,3 +668,4 @@ export function SystemHealth({ health }: { health: SystemHealthData }) {
     </Panel>
   )
 }
+

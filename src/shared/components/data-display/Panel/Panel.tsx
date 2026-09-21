@@ -7,6 +7,7 @@ interface PanelProps {
   actions?: ReactNode
   children: ReactNode
   className?: string
+  contentClassName?: string
   padding?: 'none' | 'sm' | 'md'
 }
 
@@ -14,6 +15,7 @@ export function Panel({
   actions,
   children,
   className = '',
+  contentClassName = '',
   description,
   padding = 'md',
   title,
@@ -33,7 +35,7 @@ export function Panel({
           {actions && <div className={styles.actions}>{actions}</div>}
         </header>
       )}
-      <div className={styles.content}>{children}</div>
+      <div className={[styles.content, contentClassName].filter(Boolean).join(' ')}>{children}</div>
     </section>
   )
 }
