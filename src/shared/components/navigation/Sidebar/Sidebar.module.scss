@@ -59,7 +59,11 @@
   display: inline-flex;
   min-width: 0;
   align-items: center;
+  padding: $spacing-xs $spacing-sm;
+  border: 1px solid rgb(255 255 255 / 72%);
   border-radius: $radius-sm;
+  background: #fff;
+  box-shadow: 0 4px 12px rgb(3 20 54 / 14%);
 
   &:focus-visible {
     @include focus-ring;
@@ -70,7 +74,6 @@
   display: block;
   width: 148px;
   max-width: 100%;
-  filter: brightness(0) invert(1);
 }
 
 .closeButton {
@@ -100,19 +103,12 @@
   padding: $spacing-sm $spacing-md $spacing-lg;
 }
 
-.navList,
-.children {
+.navList {
   display: grid;
   gap: $spacing-xs;
   margin: 0;
   padding: 0;
   list-style: none;
-}
-
-.itemRow {
-  position: relative;
-  display: flex;
-  align-items: center;
 }
 
 .navItem {
@@ -151,12 +147,6 @@
   opacity: 0.56;
 }
 
-.childItem {
-  min-height: 38px;
-  padding-left: $spacing-xl;
-  font-size: $font-size-xs;
-}
-
 .navIcon {
   display: grid;
   place-items: center;
@@ -178,44 +168,4 @@
   font-weight: 800;
   line-height: 1.35;
   text-align: center;
-}
-
-.expandButton {
-  display: grid;
-  width: 34px;
-  height: 34px;
-  margin-left: -38px;
-  flex: 0 0 auto;
-  place-items: center;
-  border: 0;
-  border-radius: $radius-sm;
-  background: transparent;
-  color: rgb(255 255 255 / 84%);
-  transition: transform $transition-fast, background-color $transition-fast;
-
-  &:hover {
-    background: rgb(255 255 255 / 10%);
-    color: #fff;
-  }
-
-  &:focus-visible {
-    @include focus-ring;
-  }
-}
-
-.expanded {
-  transform: rotate(180deg);
-}
-
-.children {
-  max-height: 0;
-  overflow: hidden;
-  padding-left: $spacing-xs;
-  opacity: 0;
-  transition: max-height $transition-normal, opacity $transition-normal;
-}
-
-.childrenOpen {
-  max-height: 180px;
-  opacity: 1;
 }

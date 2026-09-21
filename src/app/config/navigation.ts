@@ -6,7 +6,6 @@ export interface NavigationItem {
   path?: string
   icon: NavIconName
   badge?: number | string
-  children?: NavigationItem[]
   disabled?: boolean
 }
 
@@ -34,16 +33,7 @@ export interface NavbarUser {
 export const navigationItems: NavigationItem[] = [
   { id: 'overview', label: 'Overview', path: '/dashboard', icon: 'activity' },
   { id: 'fleet', label: 'Fleet', path: '/fleet', icon: 'fleet' },
-  {
-    id: 'gateways',
-    label: 'Gateways',
-    path: '/gateways',
-    icon: 'gateway',
-    children: [
-      { id: 'gateway-inventory', label: 'Inventory', path: '/gateways', icon: 'gateway' },
-      { id: 'gateway-health', label: 'Health', path: '/diagnostics', icon: 'activity' },
-    ],
-  },
+  { id: 'gateways', label: 'Gateways', path: '/gateways', icon: 'gateway' },
   { id: 'sensors', label: 'Sensors', path: '/sensors', icon: 'chip' },
   { id: 'topology', label: 'Topology', path: '/topology', icon: 'topology' },
   { id: 'alerts', label: 'Alerts', path: '/alerts', icon: 'alert', badge: 23 },
@@ -90,8 +80,7 @@ export const navbarUser: NavbarUser = {
 }
 
 export const dashboardPaths = new Set(
-  navigationItems.flatMap((item) => [
-    item.path,
-    ...(item.children?.map((child) => child.path) ?? []),
-  ]).filter((path): path is string => Boolean(path)),
+  navigationItems
+    .map((item) => item.path)
+    .filter((path): path is string => Boolean(path)),
 )
