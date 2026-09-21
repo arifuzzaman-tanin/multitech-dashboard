@@ -1,0 +1,221 @@
+@use '@/assets/styles/abstracts' as *;
+
+.sidebar {
+  position: fixed;
+  z-index: $z-modal;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  width: var(--app-sidebar-width);
+  max-width: calc(100vw - #{$spacing-lg});
+  flex-direction: column;
+  overflow: hidden;
+  background: linear-gradient(180deg, #0757b8 0%, #064ea9 45%, #034590 100%);
+  box-shadow: 24px 0 60px rgb(3 20 54 / 24%);
+  color: #fff;
+  transform: translateX(-100%);
+  transition: transform $transition-normal;
+
+  @include respond-to(lg) {
+    z-index: $z-sticky;
+    transform: none;
+  }
+}
+
+.open {
+  transform: translateX(0);
+}
+
+.overlay {
+  position: fixed;
+  z-index: $z-sticky;
+  inset: 0;
+  display: none;
+  background: rgb(7 27 74 / 52%);
+  opacity: 0;
+  transition: opacity $transition-normal;
+}
+
+.overlayOpen {
+  display: block;
+  opacity: 1;
+
+  @include respond-to(lg) {
+    display: none;
+  }
+}
+
+.header {
+  display: flex;
+  min-height: var(--app-navbar-height);
+  align-items: center;
+  justify-content: space-between;
+  gap: $spacing-md;
+  padding: $spacing-md $spacing-lg;
+}
+
+.logoLink {
+  display: inline-flex;
+  min-width: 0;
+  align-items: center;
+  border-radius: $radius-sm;
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+.logo {
+  display: block;
+  width: 148px;
+  max-width: 100%;
+  filter: brightness(0) invert(1);
+}
+
+.closeButton {
+  display: grid;
+  width: 44px;
+  height: 44px;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 0;
+  border-radius: $radius-md;
+  background: rgb(255 255 255 / 10%);
+  color: #fff;
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+
+  @include respond-to(lg) {
+    display: none;
+  }
+}
+
+.nav {
+  min-height: 0;
+  flex: 1;
+  overflow-y: auto;
+  padding: $spacing-sm $spacing-md $spacing-lg;
+}
+
+.navList,
+.children {
+  display: grid;
+  gap: $spacing-xs;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.itemRow {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.navItem {
+  display: grid;
+  min-height: 44px;
+  flex: 1;
+  grid-template-columns: 24px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: $spacing-sm;
+  padding: 0 $spacing-sm 0 $spacing-md;
+  border-radius: $radius-md;
+  color: rgb(255 255 255 / 84%);
+  font-size: $font-size-sm;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background-color $transition-fast, color $transition-fast;
+
+  &:hover {
+    background: rgb(255 255 255 / 11%);
+    color: #fff;
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+.active {
+  background: #0b8cf0;
+  color: #fff;
+  box-shadow: 0 10px 24px rgb(0 31 85 / 18%);
+}
+
+.disabled {
+  cursor: not-allowed;
+  opacity: 0.56;
+}
+
+.childItem {
+  min-height: 38px;
+  padding-left: $spacing-xl;
+  font-size: $font-size-xs;
+}
+
+.navIcon {
+  display: grid;
+  place-items: center;
+  color: currentColor;
+  opacity: 0.92;
+}
+
+.navLabel {
+  @include truncate;
+}
+
+.badge {
+  min-width: 24px;
+  padding: 2px 7px;
+  border-radius: $radius-full;
+  background: var(--color-danger);
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 800;
+  line-height: 1.35;
+  text-align: center;
+}
+
+.expandButton {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  margin-left: -38px;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 0;
+  border-radius: $radius-sm;
+  background: transparent;
+  color: rgb(255 255 255 / 84%);
+  transition: transform $transition-fast, background-color $transition-fast;
+
+  &:hover {
+    background: rgb(255 255 255 / 10%);
+    color: #fff;
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+.expanded {
+  transform: rotate(180deg);
+}
+
+.children {
+  max-height: 0;
+  overflow: hidden;
+  padding-left: $spacing-xs;
+  opacity: 0;
+  transition: max-height $transition-normal, opacity $transition-normal;
+}
+
+.childrenOpen {
+  max-height: 180px;
+  opacity: 1;
+}

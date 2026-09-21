@@ -1,7 +1,7 @@
 @use '@/assets/styles/abstracts' as *;
 
 .page {
-  min-height: 100vh;
+  min-height: calc(100vh - var(--app-navbar-height));
   padding: $spacing-lg;
 
   @include respond-to(md) {
@@ -21,7 +21,7 @@
   @include respond-to(lg) {
     grid-template-columns: minmax(0, 1fr) minmax(280px, 480px);
     gap: $spacing-2xl;
-    min-height: calc(100vh - #{$spacing-2xl * 2});
+    min-height: calc(100vh - var(--app-navbar-height) - #{$spacing-2xl * 2});
   }
 }
 
