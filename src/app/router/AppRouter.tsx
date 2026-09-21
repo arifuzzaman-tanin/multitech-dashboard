@@ -1,4 +1,4 @@
-import { LoginPage } from '@/features/authentication'
+import { LoginPage, RegistrationPage } from '@/features/authentication'
 import { DashboardPage } from '@/features/dashboard'
 
 export function AppRouter() {
@@ -6,6 +6,10 @@ export function AppRouter() {
 
   if (path === '/dashboard') {
     return <DashboardPage />
+  }
+
+  if (path === '/register') {
+    return <RegistrationPage />
   }
 
   return <LoginPage />

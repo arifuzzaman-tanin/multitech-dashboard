@@ -10,6 +10,14 @@ export function LockIcon({ size = 22 }: IconProps) {
   return <svg {...commonProps} aria-hidden="true" height={size} viewBox="0 0 24 24" width={size}><rect height="12" rx="2" width="16" x="4" y="9" /><path d="M8 9V6a4 4 0 0 1 8 0v3M12 14v2" /></svg>
 }
 
+export function UserIcon({ size = 22 }: IconProps) {
+  return <svg {...commonProps} aria-hidden="true" height={size} viewBox="0 0 24 24" width={size}><circle cx="12" cy="8" r="4" /><path d="M4 21a8 8 0 0 1 16 0" /></svg>
+}
+
+export function BuildingIcon({ size = 22 }: IconProps) {
+  return <svg {...commonProps} aria-hidden="true" height={size} viewBox="0 0 24 24" width={size}><rect height="18" rx="2" width="14" x="5" y="3" /><path d="M9 7h.01M15 7h.01M9 11h.01M15 11h.01M9 15h.01M15 15h.01M11 21v-3h2v3" /></svg>
+}
+
 export function EyeIcon({ size = 22 }: IconProps) {
   return <svg {...commonProps} aria-hidden="true" height={size} viewBox="0 0 24 24" width={size}><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z" /><circle cx="12" cy="12" r="2.5" /></svg>
 }

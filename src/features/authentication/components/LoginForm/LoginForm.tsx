@@ -4,7 +4,7 @@ import { Input } from '@/shared/components/forms/Input/Input'
 import { validateLogin } from '../../schemas/login.schema'
 import type { LoginFormErrors, LoginFormValues } from '../../types/authentication.types'
 import { ArrowRightIcon, EyeIcon, EyeOffIcon, LockIcon, MailIcon } from '../icons'
-import styles from './LoginForm.module.scss'
+import styles from '../AuthForm.module.scss'
 
 const INITIAL_VALUES: LoginFormValues = { email: '', password: '' }
 
@@ -87,7 +87,7 @@ export function LoginForm() {
 
         <p className={styles.contact}>
           Don't have an account?{' '}
-          <a href="#" onClick={handlePlaceholderLink}>Contact your administrator</a>
+          <a href="/register">Create an account</a>
         </p>
       </form>
     </div>
