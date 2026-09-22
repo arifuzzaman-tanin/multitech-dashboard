@@ -14,6 +14,7 @@ export type NavIconName =
   | 'gateway'
   | 'globe'
   | 'help'
+  | 'logout'
   | 'menu'
   | 'network'
   | 'organization'
@@ -44,6 +45,7 @@ const iconPaths: Record<NavIconName, ReactElement> = {
   gateway: <path d="M5 9h14v9a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V9ZM8 13h.01M12 13h4M9 9V5h6v4M7 5h10" />,
   globe: <path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18ZM3 12h18M12 3c2 2.5 3 5.5 3 9s-1 6.5-3 9M12 3c-2 2.5-3 5.5-3 9s1 6.5 3 9" />,
   help: <path d="M9.5 9a2.5 2.5 0 1 1 4.3 1.7c-.9.8-1.8 1.3-1.8 2.8M12 17h.01M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />,
+  logout: <path d="M10 17 15 12l-5-5M15 12H3M21 19V5a2 2 0 0 0-2-2h-6M13 21h6a2 2 0 0 0 2-2" />,
   menu: <path d="M4 7h16M4 12h16M4 17h16" />,
   network: <path d="M12 5v5M12 14v5M5 19h14M5 5h14M8 10h8v4H8zM6 5v14M18 5v14" />,
   organization: <path d="M8 20v-6h8v6M5 20V8l7-4 7 4v12M9 10h.01M12 10h.01M15 10h.01" />,

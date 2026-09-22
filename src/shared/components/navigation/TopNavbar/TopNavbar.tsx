@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
   navbarSelectors,
   notificationCount,
@@ -21,12 +21,52 @@ interface TopNavbarProps {
 
 export function TopNavbar({ onLogout, onMenuClick, user }: TopNavbarProps) {
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false)
+  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false)
+  const profileMenuRef = useRef<HTMLDivElement>(null)
   const displayName = user?.name ?? 'Account'
   const company = user?.company ?? 'Signed in'
   const initials = getInitials(displayName)
 
+  useEffect(() => {
+    if (!isProfileMenuOpen) {
+      return undefined
+    }
+
+    const handleDocumentPointerDown = (event: PointerEvent) => {
+      if (
+        profileMenuRef.current &&
+        !profileMenuRef.current.contains(event.target as Node)
+      ) {
+        setIsProfileMenuOpen(false)
+      }
+    }
+
+    const handleDocumentKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setIsProfileMenuOpen(false)
+      }
+    }
+
+    document.addEventListener('pointerdown', handleDocumentPointerDown)
+    document.addEventListener('keydown', handleDocumentKeyDown)
+
+    return () => {
+      document.removeEventListener('pointerdown', handleDocumentPointerDown)
+      document.removeEventListener('keydown', handleDocumentKeyDown)
+    }
+  }, [isProfileMenuOpen])
+
   const handleFilterClick = () => {
     setIsMobileFilterOpen((currentValue) => !currentValue)
+  }
+
+  const handleProfileClick = () => {
+    setIsProfileMenuOpen((currentValue) => !currentValue)
+  }
+
+  const handleLogoutClick = () => {
+    setIsProfileMenuOpen(false)
+    onLogout()
   }
 
   return (
@@ -73,26 +113,44 @@ export function TopNavbar({ onLogout, onMenuClick, user }: TopNavbarProps) {
             <span className={styles.notificationBadge}>{notificationCount}</span>
           )}
         </button>
-        <button
-          aria-label={`Open profile menu for ${displayName}`}
-          className={styles.profileButton}
-          type="button"
-        >
-          <span className={styles.avatar} aria-hidden="true">
-            {initials}
-          </span>
-          <span className={styles.profileText}>
-            <span className={styles.profileName}>{displayName}</span>
-            <span className={styles.profileRole}>{company}</span>
-          </span>
-        </button>
-        <button
-          className={styles.logoutButton}
-          onClick={onLogout}
-          type="button"
-        >
-          Sign out
-        </button>
+        <div className={styles.profileMenu} ref={profileMenuRef}>
+          <button
+            aria-expanded={isProfileMenuOpen}
+            aria-haspopup="menu"
+            aria-label={`Open profile menu for ${displayName}`}
+            className={styles.profileButton}
+            onClick={handleProfileClick}
+            type="button"
+          >
+            <span className={styles.avatar} aria-hidden="true">
+              {initials}
+            </span>
+          </button>
+
+          {isProfileMenuOpen && (
+            <div className={styles.profileDropdown} role="menu">
+              <div className={styles.profileSummary}>
+                <span className={styles.dropdownAvatar} aria-hidden="true">
+                  {initials}
+                </span>
+                <span className={styles.profileText}>
+                  <span className={styles.profileName}>{displayName}</span>
+                  <span className={styles.profileRole}>{company}</span>
+                </span>
+              </div>
+
+              <button
+                className={styles.logoutButton}
+                onClick={handleLogoutClick}
+                role="menuitem"
+                type="button"
+              >
+                <NavIcon name="logout" size={18} />
+                <span>Sign out</span>
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     </header>
   )

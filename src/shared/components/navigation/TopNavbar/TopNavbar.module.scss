@@ -157,7 +157,7 @@
 .filterOpen {
   .logoLink,
   .actions .iconButton:not(.filterButton),
-  .profileButton {
+  .profileMenu {
     display: none;
   }
 
@@ -170,8 +170,8 @@
       display: grid;
     }
 
-    .profileButton {
-      display: inline-flex;
+    .profileMenu {
+      display: block;
     }
   }
 }
@@ -197,18 +197,24 @@
   line-height: 1.2;
 }
 
+.profileMenu {
+  position: relative;
+  flex: 0 0 auto;
+}
+
 .profileButton {
   display: inline-flex;
   min-height: 44px;
-  min-width: 0;
+  min-width: 44px;
   align-items: center;
-  gap: $spacing-sm;
-  padding: 3px $spacing-sm 3px 3px;
+  justify-content: center;
+  padding: 3px;
   border-radius: $radius-full;
 
   &:hover {
-    border-color: #d9e6f5;
+    border-color: #cfe0f4;
     background: #fff;
+    box-shadow: 0 10px 24px rgb(8 108 240 / 12%);
   }
 }
 
@@ -225,20 +231,67 @@
   font-weight: 800;
 }
 
+.profileDropdown {
+  position: absolute;
+  top: calc(100% + #{$spacing-sm});
+  right: 0;
+  z-index: $z-dropdown;
+  width: min(280px, calc(100vw - #{$spacing-md * 2}));
+  padding: $spacing-sm;
+  border: 1px solid #d8e4f2;
+  border-radius: $radius-lg;
+  background: #fff;
+  box-shadow: 0 22px 48px rgb(7 27 74 / 18%);
+}
+
+.profileDropdown::before {
+  position: absolute;
+  top: -6px;
+  right: 18px;
+  width: 12px;
+  height: 12px;
+  border-top: 1px solid #d8e4f2;
+  border-left: 1px solid #d8e4f2;
+  background: #fff;
+  content: '';
+  transform: rotate(45deg);
+}
+
+.profileSummary {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: $spacing-sm;
+  padding: $spacing-sm;
+  border-radius: $radius-md;
+  background: linear-gradient(135deg, #f7fbff 0%, #edf6ff 100%);
+}
+
+.dropdownAvatar {
+  display: grid;
+  width: 44px;
+  height: 44px;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid rgb(255 255 255 / 74%);
+  border-radius: $radius-full;
+  background: var(--color-brand);
+  box-shadow: 0 12px 24px rgb(8 108 240 / 22%);
+  color: #fff;
+  font-size: $font-size-sm;
+  font-weight: 800;
+}
+
 .profileText {
-  display: none;
+  display: grid;
   min-width: 0;
   text-align: left;
-
-  @include respond-to(lg) {
-    display: grid;
-  }
 }
 
 .profileName,
 .profileRole {
   @include truncate;
-  max-width: 132px;
+  max-width: 184px;
 }
 
 .profileName {
@@ -254,21 +307,21 @@
 }
 
 .logoutButton {
-  display: inline-flex;
-  min-height: 40px;
+  display: flex;
+  width: 100%;
+  min-height: 42px;
   align-items: center;
-  border-radius: $radius-full;
-  color: var(--color-brand);
+  gap: $spacing-sm;
+  justify-content: flex-start;
+  margin-top: $spacing-sm;
+  border-radius: $radius-md;
+  color: var(--color-danger);
   font-size: $font-size-sm;
-  font-weight: 800;
-  padding: 0 $spacing-sm;
+  font-weight: 700;
+  padding: 0 $spacing-md;
 
   &:hover {
-    border-color: #d9e6f5;
-    background: #fff;
-  }
-
-  @include respond-to(md) {
-    padding: 0 $spacing-md;
+    border-color: #f3c7c7;
+    background: #fff5f5;
   }
 }
