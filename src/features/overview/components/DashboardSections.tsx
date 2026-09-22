@@ -603,24 +603,25 @@ export function TelemetryFleet({ gateways }: { gateways: FleetGateway[] }) {
 interface GatewayAction {
   label: string
   icon: OverviewIconName
+  variant?: 'primary'
 }
 
 const selectedGatewayActions: GatewayAction[] = [
-  { label: 'Restart Service', icon: 'flow' },
-  { label: 'Reboot Gateway', icon: 'clock' },
+  { label: 'Restart Service', icon: 'flow', variant: 'primary' },
+  { label: 'Reboot Gateway', icon: 'clock', variant: 'primary' },
   { label: 'Sync Config', icon: 'cloud' },
   { label: 'Run Connectivity Test', icon: 'wifi' },
   { label: 'View Logs', icon: 'database' },
   { label: 'Deploy Firmware', icon: 'device' },
 ]
 
-const selectedGatewayDetails: Array<{ label: string; key: keyof FleetGateway }> = [
-  { label: 'Model', key: 'model' },
-  { label: 'Backhaul', key: 'backhaul' },
-  { label: 'LoRaWAN Devices', key: 'lorawanDevices' },
-  { label: 'Firmware', key: 'firmware' },
-  { label: 'CPU / Memory', key: 'cpu' },
-  { label: 'Signal', key: 'signal' },
+const selectedGatewayDetails: Array<{ label: string; key: keyof FleetGateway; icon: OverviewIconName }> = [
+  { label: 'Model', key: 'model', icon: 'gateway' },
+  { label: 'Backhaul', key: 'backhaul', icon: 'cellular' },
+  { label: 'LoRaWAN Devices', key: 'lorawanDevices', icon: 'lora' },
+  { label: 'Firmware', key: 'firmware', icon: 'device' },
+  { label: 'CPU / Memory', key: 'cpu', icon: 'gauge' },
+  { label: 'Signal', key: 'signal', icon: 'signal' },
 ]
 
 export function SelectedGateway({ gateway }: { gateway: FleetGateway & { region: string } }) {
@@ -632,28 +633,47 @@ export function SelectedGateway({ gateway }: { gateway: FleetGateway & { region:
       title="Selected Gateway"
     >
       <div className={styles.gatewayControls}>
-        <div className={styles.selectedGatewayMain}>
-          <div className={styles.gatewayDevice} aria-hidden="true">
-            <span className={styles.gatewayAntenna} />
-            <span className={styles.gatewayAntennaSmall} />
-            <span className={styles.gatewayBody}>
-              <span className={styles.gatewayPort} />
-              <span className={styles.gatewayPort} />
-              <span className={styles.gatewayPort} />
-              <span className={styles.gatewayLed} />
-            </span>
-          </div>
-          <div className={styles.gatewaySummary}>
-            <div className={styles.gatewayTitleRow}>
-              <h3>{gateway.gateway}</h3>
-              <StatusBadge className={styles.gatewayStatusBadge} label={formatStatus(gateway.status)} tone={operationalTone[gateway.status]} dot />
+        <div className={styles.gatewayHero}>
+          <div className={styles.selectedGatewayMain}>
+            <div className={styles.gatewayDevice} aria-hidden="true">
+              <span className={styles.gatewaySignalRing} />
+              <span className={styles.gatewaySignalRing} />
+              <span className={styles.gatewayAntenna} />
+              <span className={styles.gatewayAntennaSmall} />
+              <span className={styles.gatewayBody}>
+                <span className={styles.gatewayPort} />
+                <span className={styles.gatewayPort} />
+                <span className={styles.gatewayPort} />
+                <span className={styles.gatewayLed} />
+              </span>
             </div>
-            <p>{gateway.region}</p>
+            <div className={styles.gatewaySummary}>
+              <span className={styles.gatewayEyebrow}>Active gateway</span>
+              <div className={styles.gatewayTitleRow}>
+                <h3>{gateway.gateway}</h3>
+                <StatusBadge className={styles.gatewayStatusBadge} label={formatStatus(gateway.status)} tone={operationalTone[gateway.status]} dot />
+              </div>
+              <p>
+                <OverviewIcon name="location" size={13} strokeWidth={2.1} />
+                <span>{gateway.region}</span>
+              </p>
+            </div>
+          </div>
+          <div className={styles.gatewayHeroStats} aria-label="Gateway quick metrics">
+            <div>
+              <span>{gateway.lastSeen}</span>
+              <strong>Last Seen</strong>
+            </div>
+            <div>
+              <span>{gateway.site}</span>
+              <strong>Site</strong>
+            </div>
           </div>
         </div>
         <dl className={styles.gatewayDetails}>
           {selectedGatewayDetails.map((detail) => (
             <div key={detail.key}>
+              <OverviewIcon name={detail.icon} size={16} strokeWidth={2.1} />
               <dt>{detail.label}</dt>
               <dd>
                 {detail.key === 'cpu'
@@ -665,7 +685,7 @@ export function SelectedGateway({ gateway }: { gateway: FleetGateway & { region:
         </dl>
         <div className={styles.gatewayActions}>
           {selectedGatewayActions.map((action) => (
-            <button key={action.label} type="button">
+            <button className={action.variant === 'primary' ? styles.gatewayPrimaryAction : undefined} key={action.label} type="button">
               <OverviewIcon name={action.icon} size={14} strokeWidth={2.3} />
               <span>{action.label}</span>
             </button>

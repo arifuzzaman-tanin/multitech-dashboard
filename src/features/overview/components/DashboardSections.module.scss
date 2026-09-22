@@ -799,6 +799,7 @@
 }
 
 .connectivityPanel {
+  container: connectivity-panel / inline-size;
   display: grid;
   height: 100%;
   border-color: #e7eef8;
@@ -813,11 +814,6 @@
   align-items: center;
   gap: 16px;
   padding-top: 3px;
-
-  @include respond-to(sm) {
-    gap: 18px;
-    grid-template-columns: minmax(118px, 0.75fr) minmax(0, 1.25fr);
-  }
 }
 
 .donut {
@@ -827,10 +823,6 @@
   justify-self: center;
   place-items: center;
   border-radius: $radius-full;
-
-  @include respond-to(sm) {
-    width: clamp(118px, 18vw, 150px);
-  }
 }
 
 .donutCenter {
@@ -867,13 +859,6 @@
   gap: 14px 18px;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   min-width: 0;
-
-  @include respond-to(sm) {
-    max-width: none;
-    justify-self: stretch;
-    gap: clamp(10px, 2.5vw, 15px);
-    grid-template-columns: 1fr;
-  }
 }
 
 .segment {
@@ -909,8 +894,26 @@
     font-weight: 800;
     white-space: nowrap;
   }
+}
 
-  @include respond-to(sm) {
+@container connectivity-panel (min-width: 430px) {
+  .donutLayout {
+    gap: 18px;
+    grid-template-columns: minmax(118px, 0.75fr) minmax(0, 1.25fr);
+  }
+
+  .donut {
+    width: clamp(118px, 38cqw, 150px);
+  }
+
+  .segmentList {
+    max-width: none;
+    justify-self: stretch;
+    gap: clamp(10px, 2.5cqw, 15px);
+    grid-template-columns: 1fr;
+  }
+
+  .segment {
     grid-template-columns: 15px minmax(86px, 1fr) minmax(92px, auto);
     gap: 0;
 
@@ -924,45 +927,85 @@
 .selectedGatewayPanel {
   display: flex;
   flex-direction: column;
-  border-color: #e3eefc;
-  border-radius: 5px;
-  background: #fff;
-  box-shadow: 0 2px 9px rgb(8 42 91 / 8%);
+  overflow: hidden;
+  border-color: #d6e6f8;
+  border-radius: $radius-md;
+  background:
+    linear-gradient(180deg, #f7fbff 0%, #fff 42%),
+    #fff;
+  box-shadow: 0 14px 38px rgb(8 42 91 / 12%);
 }
 
 .selectedGatewayContent {
   display: flex;
   flex: 1;
   flex-direction: column;
+  gap: 14px;
 }
 
 .gatewayControls {
   display: grid;
   flex: 1;
   align-content: space-between;
+  gap: 14px;
+}
+
+.gatewayHero {
+  display: grid;
+  min-width: 0;
+  align-items: stretch;
   gap: 12px;
-  padding-top: 24px;
+  grid-template-columns: minmax(0, 1fr) minmax(146px, 0.38fr);
 }
 
 .selectedGatewayMain {
   display: grid;
   min-width: 0;
   align-items: center;
-  gap: 10px;
-  grid-template-columns: 54px minmax(0, 1fr);
+  gap: 14px;
+  padding: 14px;
+  border: 1px solid #d8e8fa;
+  border-radius: $radius-md;
+  background:
+    radial-gradient(circle at 26px 28px, rgb(15 111 229 / 16%) 0 30px, transparent 31px),
+    linear-gradient(135deg, #eff7ff 0%, #fff 72%);
+  grid-template-columns: 70px minmax(0, 1fr);
 }
 
 .gatewayDevice {
   position: relative;
-  width: 54px;
-  height: 46px;
+  width: 64px;
+  height: 58px;
   align-self: start;
+}
+
+.gatewaySignalRing {
+  position: absolute;
+  right: 0;
+  bottom: 18px;
+  width: 38px;
+  height: 38px;
+  border: 1px solid rgb(15 111 229 / 18%);
+  border-left-color: transparent;
+  border-bottom-color: transparent;
+  border-radius: $radius-full;
+  transform: rotate(-28deg);
+
+  &:first-child {
+    right: 8px;
+    bottom: 24px;
+    width: 22px;
+    height: 22px;
+    border-color: rgb(15 111 229 / 26%);
+    border-left-color: transparent;
+    border-bottom-color: transparent;
+  }
 }
 
 .gatewayAntenna,
 .gatewayAntennaSmall {
   position: absolute;
-  bottom: 21px;
+  bottom: 24px;
   width: 4px;
   border-radius: $radius-full $radius-full 0 0;
   background: linear-gradient(90deg, #111827, #3f4653);
@@ -971,13 +1014,13 @@
 }
 
 .gatewayAntenna {
-  left: 34px;
-  height: 35px;
+  left: 40px;
+  height: 42px;
 }
 
 .gatewayAntennaSmall {
-  left: 45px;
-  height: 30px;
+  left: 52px;
+  height: 34px;
 }
 
 .gatewayBody {
@@ -986,14 +1029,14 @@
   left: 0;
   z-index: 1;
   display: flex;
-  width: 53px;
-  height: 22px;
+  width: 62px;
+  height: 28px;
   box-sizing: border-box;
   align-items: end;
   gap: 4px;
-  padding: 4px 5px;
+  padding: 6px;
   border: 1px solid #64748b;
-  border-radius: 3px;
+  border-radius: 5px;
   background:
     radial-gradient(circle at 7px 6px, #0ea5e9 0 1.4px, transparent 1.8px),
     linear-gradient(180deg, #111827 0%, #1e293b 100%);
@@ -1019,9 +1062,19 @@
 
 .gatewaySummary {
   min-width: 0;
+  display: flex;
   flex-direction: column;
-  gap: 0;
+  gap: 5px;
   align-items: flex-start;
+}
+
+.gatewayEyebrow {
+  color: #5c7393;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0;
+  line-height: 1;
+  text-transform: uppercase;
 }
 
 .gatewayTitleRow {
@@ -1029,52 +1082,121 @@
   min-width: 0;
   flex-wrap: wrap;
   align-items: center;
-  gap: 7px;
+  gap: 8px 10px;
 
   h3 {
     margin: 0;
-    color: #12305b;
-    font-size: 13px;
+    color: #0f264a;
+    font-size: clamp(17px, 3cqw, 23px);
     font-weight: 800;
-    line-height: 1.15;
+    line-height: 1.05;
   }
 }
 
 .gatewaySummary p {
-  margin: 4px 0 0;
-  color: #2670c9;
-  font-size: 10px;
+  display: inline-flex;
+  min-width: 0;
+  align-items: center;
+  gap: 5px;
+  margin: 0;
+  color: #2364b2;
+  font-size: 12px;
   font-weight: 700;
-  line-height: 1.15;
+  line-height: 1.25;
+
+  svg {
+    flex: 0 0 auto;
+  }
+
+  span {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+}
+
+.gatewayHeroStats {
+  display: grid;
+  min-width: 0;
+  gap: 8px;
+
+  div {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+    padding: 11px 12px;
+    border: 1px solid #dbeafe;
+    border-radius: $radius-md;
+    background: #fff;
+    box-shadow: 0 8px 20px rgb(15 63 118 / 7%);
+  }
+
+  span {
+    overflow: hidden;
+    color: #0f264a;
+    font-size: 12px;
+    font-weight: 800;
+    line-height: 1.15;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  strong {
+    color: #7186a2;
+    font-size: 10px;
+    font-weight: 800;
+    line-height: 1.1;
+    text-transform: uppercase;
+  }
 }
 
 .gatewayDetails {
   display: grid;
   margin: 0;
-  gap: 8px;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 
   div {
+    display: grid;
     min-width: 0;
-    padding: 8px 9px;
+    align-items: center;
+    gap: 9px;
+    padding: 10px;
     border: 1px solid #dbeafe;
-    border-radius: 4px;
-    background: #f5f9ff;
+    border-radius: $radius-md;
+    background: #f8fbff;
+    grid-template-columns: 30px minmax(0, 1fr);
+    grid-template-rows: auto auto;
+
+    > svg {
+      width: 30px;
+      height: 30px;
+      box-sizing: border-box;
+      padding: 7px;
+      border-radius: $radius-sm;
+      background: #eaf4ff;
+      color: #0f6fe5;
+      grid-row: 1 / 3;
+    }
   }
 
   dt {
-    margin: 0 0 3px;
+    min-width: 0;
+    margin: 0 0 4px;
     color: #7186a2;
-    font-size: 9px;
-    font-weight: 700;
+    font-size: 10px;
+    font-weight: 800;
     line-height: 1.2;
+    text-transform: uppercase;
   }
 
   dd {
+    min-width: 0;
     overflow: hidden;
     margin: 0;
-    color: #12305b;
-    font-size: 11px;
+    color: #0f264a;
+    font-size: 12px;
     font-weight: 800;
     line-height: 1.25;
     text-overflow: ellipsis;
@@ -1083,33 +1205,39 @@
 }
 
 .gatewayStatusBadge {
-  min-height: 17px;
-  padding: 2px 7px;
-  font-size: 9px;
+  min-height: 22px;
+  padding: 3px 9px;
+  font-size: 10px;
   font-weight: 800;
 }
 
 .gatewayActions {
   display: grid;
-  gap: 5px 8px;
+  gap: 8px;
   grid-template-columns: repeat(3, minmax(0, 1fr));
 
   button {
     display: inline-flex;
     min-width: 0;
-    min-height: 26px;
+    min-height: 38px;
     align-items: center;
     justify-content: center;
-    gap: 6px;
-    padding: 0 10px;
-    border: 1px solid #afd2fb;
-    border-radius: 4px;
-    background: #edf6ff;
-    color: #0f6fe5;
-    font-size: 10px;
-    font-weight: 700;
-    line-height: 1.1;
+    gap: 7px;
+    padding: 0 12px;
+    border: 1px solid #c8def8;
+    border-radius: $radius-sm;
+    background: #fff;
+    color: #174285;
+    font-size: 11px;
+    font-weight: 800;
+    line-height: 1.15;
     cursor: pointer;
+    transition:
+      background $transition-fast,
+      border-color $transition-fast,
+      box-shadow $transition-fast,
+      color $transition-fast,
+      transform $transition-fast;
 
     span {
       min-width: 0;
@@ -1120,11 +1248,35 @@
 
     svg {
       flex: 0 0 auto;
+      color: #0f6fe5;
+    }
+
+    &:hover {
+      border-color: #8ec5ff;
+      background: #f1f8ff;
+      box-shadow: 0 8px 18px rgb(15 111 229 / 11%);
+      transform: translateY(-1px);
     }
 
     &:focus-visible {
       @include focus-ring;
     }
+  }
+}
+
+.gatewayPrimaryAction {
+  border-color: #0f6fe5 !important;
+  background: #0f6fe5 !important;
+  color: #fff !important;
+  box-shadow: 0 10px 20px rgb(15 111 229 / 18%);
+
+  svg {
+    color: currentColor !important;
+  }
+
+  &:hover {
+    background: #0b5ec6 !important;
+    border-color: #0b5ec6 !important;
   }
 }
 
@@ -1134,8 +1286,11 @@
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 6px 12px;
-  padding-top: 8px;
+  gap: 8px 12px;
+  padding: 10px 12px;
+  border: 1px solid #dde8f7;
+  border-radius: $radius-md;
+  background: #f8fbff;
 }
 
 .auditNote {
@@ -1144,10 +1299,10 @@
   align-items: center;
   gap: 6px;
   margin: 0;
-  color: #64748b;
-  font-size: 9px;
+  color: #586f8f;
+  font-size: 11px;
   font-weight: 700;
-  line-height: 1.1;
+  line-height: 1.25;
 
   svg {
     flex: 0 0 auto;
@@ -1157,16 +1312,17 @@
 
 .auditTrailButton {
   display: inline-flex;
-  min-height: 20px;
+  min-height: 28px;
   align-items: center;
-  gap: 4px;
-  padding: 0;
-  border: 0;
-  background: transparent;
+  gap: 5px;
+  padding: 0 10px;
+  border: 1px solid #c8def8;
+  border-radius: $radius-sm;
+  background: #fff;
   color: #0f6fe5;
-  font-size: 9px;
+  font-size: 11px;
   font-weight: 800;
-  line-height: 1.1;
+  line-height: 1.15;
   cursor: pointer;
 
   svg {
@@ -1176,25 +1332,48 @@
   &:focus-visible {
     @include focus-ring;
   }
+
+  &:hover {
+    border-color: #8ec5ff;
+    background: #eef7ff;
+  }
 }
 
-@media (max-width: 560px) {
-  .gatewayActions {
+@media (max-width: 860px) {
+  .gatewayHero {
+    grid-template-columns: 1fr;
+  }
+
+  .gatewayHeroStats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .gatewayDetails {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
-@media (max-width: 380px) {
+@media (max-width: 560px) {
   .selectedGatewayMain {
     grid-template-columns: 1fr;
   }
 
+  .gatewayDevice {
+    align-self: center;
+  }
+
+  .gatewayHeroStats,
+  .gatewayDetails,
   .gatewayActions {
     grid-template-columns: 1fr;
   }
+}
 
-  .gatewayDetails {
-    grid-template-columns: 1fr;
+@media (max-width: 380px) {
+  .selectedGatewayMain,
+  .gatewayAuditBar {
+    padding-right: 10px;
+    padding-left: 10px;
   }
 }
 
