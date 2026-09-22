@@ -4,6 +4,7 @@ import { DashboardUnavailablePage } from '@/features/dashboard'
 import { OverviewPage } from '@/features/overview'
 import { dashboardPaths, navigationItems } from '@/app/config/navigation'
 import { AppShell } from '@/app/layout/AppShell'
+import { AppLoadingScreen } from '@/shared/components/feedback/AppLoadingScreen'
 
 const overviewPath = '/dashboard'
 const loginPath = '/'
@@ -55,7 +56,7 @@ export function AppRouter() {
   }
 
   if (status === 'loading') {
-    return <div role="status" aria-live="polite">Loading dashboard...</div>
+    return <AppLoadingScreen />
   }
 
   if (dashboardPaths.has(path)) {
