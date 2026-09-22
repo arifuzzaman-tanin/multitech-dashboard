@@ -614,6 +614,15 @@ const selectedGatewayActions: GatewayAction[] = [
   { label: 'Deploy Firmware', icon: 'device' },
 ]
 
+const selectedGatewayDetails: Array<{ label: string; key: keyof FleetGateway }> = [
+  { label: 'Model', key: 'model' },
+  { label: 'Backhaul', key: 'backhaul' },
+  { label: 'LoRaWAN Devices', key: 'lorawanDevices' },
+  { label: 'Firmware', key: 'firmware' },
+  { label: 'CPU / Memory', key: 'cpu' },
+  { label: 'Signal', key: 'signal' },
+]
+
 export function SelectedGateway({ gateway }: { gateway: FleetGateway & { region: string } }) {
   return (
     <Panel
@@ -642,6 +651,18 @@ export function SelectedGateway({ gateway }: { gateway: FleetGateway & { region:
             <p>{gateway.region}</p>
           </div>
         </div>
+        <dl className={styles.gatewayDetails}>
+          {selectedGatewayDetails.map((detail) => (
+            <div key={detail.key}>
+              <dt>{detail.label}</dt>
+              <dd>
+                {detail.key === 'cpu'
+                  ? `${gateway.cpu} / ${gateway.memory}`
+                  : gateway[detail.key]}
+              </dd>
+            </div>
+          ))}
+        </dl>
         <div className={styles.gatewayActions}>
           {selectedGatewayActions.map((action) => (
             <button key={action.label} type="button">

@@ -1,3 +1,4 @@
+import type { MouseEvent } from 'react'
 import type { NavigationItem } from '@/app/config/navigation'
 import { NavIcon } from '@/shared/components/navigation/icons'
 import styles from './Sidebar.module.scss'
@@ -6,7 +7,7 @@ interface SidebarNavItemProps {
   item: NavigationItem
   currentPath: string
   isCollapsed?: boolean
-  onNavigate?: () => void
+  onNavigate?: (path: string) => void
 }
 
 export function SidebarNavItem({
@@ -34,6 +35,15 @@ export function SidebarNavItem({
     </>
   )
 
+  const handleClick = (event: MouseEvent<HTMLAnchorElement>) => {
+    if (!item.path) {
+      return
+    }
+
+    event.preventDefault()
+    onNavigate?.(item.path)
+  }
+
   return (
     <li>
       {item.path && !item.disabled ? (
@@ -42,7 +52,7 @@ export function SidebarNavItem({
           aria-current={isActive ? 'page' : undefined}
           className={itemClasses}
           href={item.path}
-          onClick={onNavigate}
+          onClick={handleClick}
           title={isCollapsed ? item.label : undefined}
         >
           {content}

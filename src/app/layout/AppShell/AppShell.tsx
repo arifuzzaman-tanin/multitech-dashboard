@@ -6,9 +6,10 @@ import styles from './AppShell.module.scss'
 interface AppShellProps {
   children: ReactNode
   currentPath: string
+  onNavigate: (path: string) => void
 }
 
-export function AppShell({ children, currentPath }: AppShellProps) {
+export function AppShell({ children, currentPath, onNavigate }: AppShellProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false)
 
@@ -42,6 +43,11 @@ export function AppShell({ children, currentPath }: AppShellProps) {
     setIsSidebarCollapsed((currentValue) => !currentValue)
   }
 
+  const handleNavigate = (path: string) => {
+    onNavigate(path)
+    closeSidebar()
+  }
+
   const workspaceClasses = [
     styles.workspace,
     isSidebarCollapsed ? styles.workspaceCollapsed : '',
@@ -57,7 +63,7 @@ export function AppShell({ children, currentPath }: AppShellProps) {
         isOpen={isSidebarOpen}
         onClose={closeSidebar}
         onCollapsedChange={toggleSidebarCollapsed}
-        onNavigate={closeSidebar}
+        onNavigate={handleNavigate}
       />
       <div className={workspaceClasses}>
         <TopNavbar onMenuClick={() => setIsSidebarOpen(true)} />

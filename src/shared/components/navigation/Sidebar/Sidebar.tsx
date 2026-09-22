@@ -9,7 +9,7 @@ interface SidebarProps {
   isOpen?: boolean
   onCollapsedChange?: () => void
   onClose?: () => void
-  onNavigate?: () => void
+  onNavigate?: (path: string) => void
 }
 
 export function Sidebar({

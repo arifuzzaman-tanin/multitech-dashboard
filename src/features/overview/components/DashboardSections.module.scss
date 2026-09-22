@@ -939,8 +939,9 @@
 .gatewayControls {
   display: grid;
   flex: 1;
-  align-content: center;
-  gap: 7px;
+  align-content: space-between;
+  gap: 12px;
+  padding-top: 24px;
 }
 
 .selectedGatewayMain {
@@ -961,11 +962,12 @@
 .gatewayAntenna,
 .gatewayAntennaSmall {
   position: absolute;
-  bottom: 27px;
+  bottom: 21px;
   width: 4px;
   border-radius: $radius-full $radius-full 0 0;
   background: linear-gradient(90deg, #111827, #3f4653);
   box-shadow: 0 1px 2px rgb(15 23 42 / 28%);
+  z-index: 0;
 }
 
 .gatewayAntenna {
@@ -982,6 +984,7 @@
   position: absolute;
   bottom: 0;
   left: 0;
+  z-index: 1;
   display: flex;
   width: 53px;
   height: 22px;
@@ -1043,6 +1046,40 @@
   font-size: 10px;
   font-weight: 700;
   line-height: 1.15;
+}
+
+.gatewayDetails {
+  display: grid;
+  margin: 0;
+  gap: 8px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  div {
+    min-width: 0;
+    padding: 8px 9px;
+    border: 1px solid #dbeafe;
+    border-radius: 4px;
+    background: #f5f9ff;
+  }
+
+  dt {
+    margin: 0 0 3px;
+    color: #7186a2;
+    font-size: 9px;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  dd {
+    overflow: hidden;
+    margin: 0;
+    color: #12305b;
+    font-size: 11px;
+    font-weight: 800;
+    line-height: 1.25;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 }
 
 .gatewayStatusBadge {
@@ -1153,6 +1190,10 @@
   }
 
   .gatewayActions {
+    grid-template-columns: 1fr;
+  }
+
+  .gatewayDetails {
     grid-template-columns: 1fr;
   }
 }
