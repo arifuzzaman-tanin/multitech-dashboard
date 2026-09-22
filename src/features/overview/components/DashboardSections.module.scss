@@ -940,51 +940,51 @@
   display: flex;
   flex: 1;
   flex-direction: column;
-  gap: 14px;
+  gap: 9px;
 }
 
 .gatewayControls {
   display: grid;
   flex: 1;
   align-content: space-between;
-  gap: 14px;
+  gap: 9px;
 }
 
 .gatewayHero {
   display: grid;
   min-width: 0;
   align-items: stretch;
-  gap: 12px;
-  grid-template-columns: minmax(0, 1fr) minmax(146px, 0.38fr);
+  gap: 8px;
+  grid-template-columns: minmax(0, 1fr);
 }
 
 .selectedGatewayMain {
   display: grid;
   min-width: 0;
   align-items: center;
-  gap: 14px;
-  padding: 14px;
+  gap: 10px;
+  padding: 10px 12px;
   border: 1px solid #d8e8fa;
   border-radius: $radius-md;
   background:
     radial-gradient(circle at 26px 28px, rgb(15 111 229 / 16%) 0 30px, transparent 31px),
     linear-gradient(135deg, #eff7ff 0%, #fff 72%);
-  grid-template-columns: 70px minmax(0, 1fr);
+  grid-template-columns: 56px minmax(0, 1fr) minmax(150px, 0.36fr);
 }
 
 .gatewayDevice {
   position: relative;
-  width: 64px;
-  height: 58px;
+  width: 52px;
+  height: 46px;
   align-self: start;
 }
 
 .gatewaySignalRing {
   position: absolute;
   right: 0;
-  bottom: 18px;
-  width: 38px;
-  height: 38px;
+  bottom: 13px;
+  width: 30px;
+  height: 30px;
   border: 1px solid rgb(15 111 229 / 18%);
   border-left-color: transparent;
   border-bottom-color: transparent;
@@ -992,10 +992,10 @@
   transform: rotate(-28deg);
 
   &:first-child {
-    right: 8px;
-    bottom: 24px;
-    width: 22px;
-    height: 22px;
+    right: 6px;
+    bottom: 18px;
+    width: 18px;
+    height: 18px;
     border-color: rgb(15 111 229 / 26%);
     border-left-color: transparent;
     border-bottom-color: transparent;
@@ -1005,8 +1005,8 @@
 .gatewayAntenna,
 .gatewayAntennaSmall {
   position: absolute;
-  bottom: 24px;
-  width: 4px;
+  bottom: 20px;
+  width: 3px;
   border-radius: $radius-full $radius-full 0 0;
   background: linear-gradient(90deg, #111827, #3f4653);
   box-shadow: 0 1px 2px rgb(15 23 42 / 28%);
@@ -1014,13 +1014,13 @@
 }
 
 .gatewayAntenna {
-  left: 40px;
-  height: 42px;
+  left: 33px;
+  height: 33px;
 }
 
 .gatewayAntennaSmall {
-  left: 52px;
-  height: 34px;
+  left: 43px;
+  height: 27px;
 }
 
 .gatewayBody {
@@ -1029,12 +1029,12 @@
   left: 0;
   z-index: 1;
   display: flex;
-  width: 62px;
-  height: 28px;
+  width: 51px;
+  height: 23px;
   box-sizing: border-box;
   align-items: end;
-  gap: 4px;
-  padding: 6px;
+  gap: 3px;
+  padding: 5px;
   border: 1px solid #64748b;
   border-radius: 5px;
   background:
@@ -1044,16 +1044,16 @@
 }
 
 .gatewayPort {
-  width: 7px;
-  height: 5px;
+  width: 6px;
+  height: 4px;
   border-radius: 1px;
   background: #123047;
   box-shadow: inset 0 0 0 1px #2f6e87;
 }
 
 .gatewayLed {
-  width: 5px;
-  height: 5px;
+  width: 4px;
+  height: 4px;
   margin-left: auto;
   border-radius: $radius-full;
   background: #22c55e;
@@ -1064,14 +1064,14 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 3px;
   align-items: flex-start;
 }
 
 .gatewayEyebrow {
   color: #5c7393;
   font-size: 10px;
-  font-weight: 800;
+  font-weight: 600;
   letter-spacing: 0;
   line-height: 1;
   text-transform: uppercase;
@@ -1082,13 +1082,13 @@
   min-width: 0;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px 10px;
+  gap: 6px 8px;
 
   h3 {
     margin: 0;
     color: #0f264a;
-    font-size: clamp(17px, 3cqw, 23px);
-    font-weight: 800;
+    font-size: 17px;
+    font-weight: 700;
     line-height: 1.05;
   }
 }
@@ -1101,7 +1101,7 @@
   margin: 0;
   color: #2364b2;
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 500;
   line-height: 1.25;
 
   svg {
@@ -1117,26 +1117,29 @@
 .gatewayHeroStats {
   display: grid;
   min-width: 0;
-  gap: 8px;
+  gap: 6px;
+  grid-template-columns: minmax(0, 1fr);
 
   div {
-    display: flex;
+    display: grid;
     min-width: 0;
-    flex-direction: column;
-    justify-content: center;
-    gap: 4px;
-    padding: 11px 12px;
-    border: 1px solid #dbeafe;
-    border-radius: $radius-md;
-    background: #fff;
-    box-shadow: 0 8px 20px rgb(15 63 118 / 7%);
+    align-items: center;
+    gap: 1px 7px;
+    padding: 2px 0;
+    grid-template-columns: 18px minmax(0, 1fr);
+    grid-template-rows: auto auto;
+
+    > svg {
+      color: #0f6fe5;
+      grid-row: 1 / 3;
+    }
   }
 
   span {
     overflow: hidden;
     color: #0f264a;
     font-size: 12px;
-    font-weight: 800;
+    font-weight: 600;
     line-height: 1.15;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -1145,7 +1148,7 @@
   strong {
     color: #7186a2;
     font-size: 10px;
-    font-weight: 800;
+    font-weight: 500;
     line-height: 1.1;
     text-transform: uppercase;
   }
@@ -1154,28 +1157,22 @@
 .gatewayDetails {
   display: grid;
   margin: 0;
-  gap: 10px;
+  gap: 8px 14px;
+  padding: 4px 2px;
   grid-template-columns: repeat(3, minmax(0, 1fr));
 
   div {
     display: grid;
     min-width: 0;
     align-items: center;
-    gap: 9px;
-    padding: 10px;
-    border: 1px solid #dbeafe;
-    border-radius: $radius-md;
-    background: #f8fbff;
-    grid-template-columns: 30px minmax(0, 1fr);
+    gap: 2px 7px;
+    padding: 3px 0;
+    grid-template-columns: 18px minmax(0, 1fr);
     grid-template-rows: auto auto;
 
     > svg {
-      width: 30px;
-      height: 30px;
-      box-sizing: border-box;
-      padding: 7px;
-      border-radius: $radius-sm;
-      background: #eaf4ff;
+      width: 16px;
+      height: 16px;
       color: #0f6fe5;
       grid-row: 1 / 3;
     }
@@ -1183,24 +1180,24 @@
 
   dt {
     min-width: 0;
-    margin: 0 0 4px;
+    margin: 0 0 2px;
     color: #7186a2;
-    font-size: 10px;
-    font-weight: 800;
+    font-size: 9px;
+    font-weight: 500;
     line-height: 1.2;
+    overflow-wrap: anywhere;
     text-transform: uppercase;
   }
 
   dd {
     min-width: 0;
-    overflow: hidden;
     margin: 0;
     color: #0f264a;
     font-size: 12px;
-    font-weight: 800;
+    font-weight: 600;
     line-height: 1.25;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    overflow-wrap: anywhere;
+    white-space: normal;
   }
 }
 
@@ -1208,42 +1205,36 @@
   min-height: 22px;
   padding: 3px 9px;
   font-size: 10px;
-  font-weight: 800;
+  font-weight: 600;
 }
 
 .gatewayActions {
   display: grid;
-  gap: 8px;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 5px;
+  grid-template-columns: repeat(auto-fit, minmax(138px, 1fr));
 
   button {
     display: inline-flex;
     min-width: 0;
-    min-height: 38px;
+    min-height: 30px;
     align-items: center;
     justify-content: center;
-    gap: 7px;
-    padding: 0 12px;
+    gap: 4px;
+    padding: 4px 7px;
     border: 1px solid #c8def8;
     border-radius: $radius-sm;
     background: #fff;
     color: #174285;
-    font-size: 11px;
-    font-weight: 800;
+    font-size: 10px;
+    font-weight: 600;
     line-height: 1.15;
     cursor: pointer;
-    transition:
-      background $transition-fast,
-      border-color $transition-fast,
-      box-shadow $transition-fast,
-      color $transition-fast,
-      transform $transition-fast;
 
     span {
       min-width: 0;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
+      overflow-wrap: anywhere;
+      text-align: center;
+      white-space: normal;
     }
 
     svg {
@@ -1254,8 +1245,6 @@
     &:hover {
       border-color: #8ec5ff;
       background: #f1f8ff;
-      box-shadow: 0 8px 18px rgb(15 111 229 / 11%);
-      transform: translateY(-1px);
     }
 
     &:focus-visible {
@@ -1268,7 +1257,7 @@
   border-color: #0f6fe5 !important;
   background: #0f6fe5 !important;
   color: #fff !important;
-  box-shadow: 0 10px 20px rgb(15 111 229 / 18%);
+  box-shadow: 0 6px 14px rgb(15 111 229 / 16%);
 
   svg {
     color: currentColor !important;
@@ -1287,7 +1276,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 8px 12px;
-  padding: 10px 12px;
+  padding: 7px 10px;
   border: 1px solid #dde8f7;
   border-radius: $radius-md;
   background: #f8fbff;
@@ -1301,7 +1290,7 @@
   margin: 0;
   color: #586f8f;
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 500;
   line-height: 1.25;
 
   svg {
@@ -1312,7 +1301,7 @@
 
 .auditTrailButton {
   display: inline-flex;
-  min-height: 28px;
+  min-height: 26px;
   align-items: center;
   gap: 5px;
   padding: 0 10px;
@@ -1321,7 +1310,7 @@
   background: #fff;
   color: #0f6fe5;
   font-size: 11px;
-  font-weight: 800;
+  font-weight: 600;
   line-height: 1.15;
   cursor: pointer;
 
@@ -1345,11 +1334,15 @@
   }
 
   .gatewayHeroStats {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .gatewayDetails {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .gatewayActions {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
@@ -1362,10 +1355,12 @@
     align-self: center;
   }
 
-  .gatewayHeroStats,
-  .gatewayDetails,
+  .gatewayDetails {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .gatewayActions {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
   }
 }
 

@@ -658,15 +658,17 @@ export function SelectedGateway({ gateway }: { gateway: FleetGateway & { region:
                 <span>{gateway.region}</span>
               </p>
             </div>
-          </div>
-          <div className={styles.gatewayHeroStats} aria-label="Gateway quick metrics">
-            <div>
-              <span>{gateway.lastSeen}</span>
-              <strong>Last Seen</strong>
-            </div>
-            <div>
-              <span>{gateway.site}</span>
-              <strong>Site</strong>
+            <div className={styles.gatewayHeroStats} aria-label="Gateway quick metrics">
+              <div>
+                <OverviewIcon name="clock" size={15} strokeWidth={2} />
+                <span>{gateway.lastSeen}</span>
+                <strong>Last Seen</strong>
+              </div>
+              <div>
+                <OverviewIcon name="location" size={15} strokeWidth={2} />
+                <span>{gateway.site}</span>
+                <strong>Site Name</strong>
+              </div>
             </div>
           </div>
         </div>
@@ -686,7 +688,7 @@ export function SelectedGateway({ gateway }: { gateway: FleetGateway & { region:
         <div className={styles.gatewayActions}>
           {selectedGatewayActions.map((action) => (
             <button className={action.variant === 'primary' ? styles.gatewayPrimaryAction : undefined} key={action.label} type="button">
-              <OverviewIcon name={action.icon} size={14} strokeWidth={2.3} />
+              <OverviewIcon name={action.icon} size={12} strokeWidth={2.2} />
               <span>{action.label}</span>
             </button>
           ))}
