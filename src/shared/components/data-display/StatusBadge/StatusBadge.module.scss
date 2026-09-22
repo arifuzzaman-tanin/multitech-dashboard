@@ -1,0 +1,59 @@
+@use '@/assets/styles/abstracts' as *;
+
+.badge {
+  display: inline-flex;
+  width: fit-content;
+  max-width: 100%;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  border-radius: $radius-full;
+  font-weight: 800;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
+.sm {
+  min-height: 22px;
+  padding: 3px 8px;
+  font-size: $font-size-xs;
+}
+
+.md {
+  min-height: 28px;
+  padding: 5px 10px;
+  font-size: $font-size-sm;
+}
+
+.dot {
+  width: 7px;
+  height: 7px;
+  flex: 0 0 auto;
+  border-radius: $radius-full;
+  background: currentColor;
+}
+
+.success {
+  background: #dcfce7;
+  color: #027a35;
+}
+
+.danger {
+  background: #fee2e2;
+  color: #d01414;
+}
+
+.warning {
+  background: #fef3c7;
+  color: #a15c00;
+}
+
+.info {
+  background: #dbeafe;
+  color: #075fcf;
+}
+
+.neutral {
+  background: #eef2f7;
+  color: #475569;
+}

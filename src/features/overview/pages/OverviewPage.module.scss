@@ -1,0 +1,100 @@
+@use '@/assets/styles/abstracts' as *;
+
+.page {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: $spacing-sm;
+  padding: $spacing-md;
+  background:
+    radial-gradient(circle at 72% 0, rgb(8 108 240 / 8%), transparent 28rem),
+    #eef6ff;
+
+  @include respond-to(lg) {
+    min-height: calc(100vh - var(--app-navbar-height));
+  }
+
+  h1,
+  h2,
+  h3,
+  strong,
+  b,
+  th,
+  button,
+  select {
+    font-weight: 500;
+  }
+}
+
+.operationsGrid,
+.analyticsGrid,
+.fleetGrid,
+.bottomGrid {
+  display: grid;
+  min-width: 0;
+  gap: $spacing-sm;
+}
+
+.operationsGrid {
+  @include respond-to(xl) {
+    grid-template-columns: minmax(0, 1.55fr) minmax(380px, 1fr);
+  }
+}
+
+.analyticsGrid {
+  @include respond-to(lg) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @include respond-to(xxl) {
+    grid-template-columns: minmax(0, 1.5fr) minmax(300px, 0.8fr) minmax(390px, 1fr);
+  }
+}
+
+.fleetGrid {
+  align-items: stretch;
+
+  @include respond-to(xl) {
+    grid-auto-rows: clamp(390px, 32vw, 430px);
+    grid-template-columns: minmax(0, 1.65fr) minmax(360px, 0.95fr);
+
+    > * {
+      min-height: 0;
+    }
+  }
+}
+
+.bottomGrid {
+  @include respond-to(lg) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @include respond-to(xxl) {
+    grid-template-columns: minmax(280px, 0.9fr) minmax(0, 1.2fr) minmax(430px, 1.4fr);
+  }
+}
+
+.stateCard {
+  display: grid;
+  min-height: 260px;
+  place-content: center;
+  gap: $spacing-sm;
+  border: 1px solid var(--color-border);
+  border-radius: $radius-md;
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
+  text-align: center;
+
+  h1,
+  p {
+    margin: 0;
+  }
+
+  button {
+    min-height: 40px;
+    border: 0;
+    border-radius: $radius-sm;
+    background: var(--color-brand);
+    color: #fff;
+  }
+}

@@ -1,0 +1,120 @@
+@use '@/assets/styles/abstracts' as *;
+
+.content {
+  width: min(456px, calc(100vw - #{$spacing-lg * 2}));
+}
+
+@include respond-to(sm) {
+  .content { width: min(456px, calc(100vw - #{$spacing-2xl * 2})); }
+}
+
+.header {
+  margin-bottom: clamp($spacing-xl, 7vw, 42px);
+
+  h1 {
+    color: var(--color-navy);
+    font-size: clamp($font-size-xl, 6vw, 2rem);
+    font-weight: 600;
+    line-height: 1.15;
+  }
+
+  p {
+    margin-top: $spacing-sm;
+    color: #627298;
+    font-size: clamp($font-size-md, 4vw, $font-size-lg);
+    line-height: 1.45;
+  }
+}
+
+.form {
+  display: grid;
+  gap: clamp($spacing-lg, 6vw, 30px);
+}
+
+.errorMessage,
+.successMessage {
+  margin: 0;
+  border-radius: $radius-md;
+  font-size: $font-size-sm;
+  font-weight: 700;
+  line-height: 1.5;
+  padding: $spacing-sm $spacing-md;
+}
+
+.errorMessage {
+  border: 1px solid rgb(190 18 60 / 18%);
+  background: rgb(255 241 242);
+  color: #9f1239;
+}
+
+.successMessage {
+  border: 1px solid rgb(22 101 52 / 18%);
+  background: rgb(240 253 244);
+  color: #166534;
+}
+
+.passwordGroup { display: grid; gap: 10px; }
+
+.visibilityButton {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border: 0;
+  border-radius: $radius-sm;
+  background: transparent;
+  color: #7180a4;
+
+  &:focus-visible { @include focus-ring; }
+}
+
+.forgotLink,
+.contact a {
+  color: var(--color-brand);
+  text-decoration: none;
+
+  &:hover { text-decoration: underline; }
+  &:focus-visible { @include focus-ring; }
+}
+
+.forgotLink {
+  display: inline-flex;
+  max-width: 100%;
+  min-height: 44px;
+  align-items: center;
+  justify-content: flex-end;
+  justify-self: end;
+  font-size: $font-size-sm;
+  overflow-wrap: anywhere;
+  text-align: right;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  color: #667493;
+  font-size: $font-size-sm;
+
+  &::before,
+  &::after {
+    height: 1px;
+    flex: 1;
+    background: #d4dcea;
+    content: '';
+  }
+}
+
+.contact {
+  color: var(--color-navy);
+  font-size: $font-size-sm;
+  line-height: 1.5;
+  text-align: center;
+
+  a { overflow-wrap: anywhere; }
+}
+
+@include respond-to(md) {
+  .header h1 { font-size: 2.125rem; }
+  .contact { font-size: $font-size-md; }
+}

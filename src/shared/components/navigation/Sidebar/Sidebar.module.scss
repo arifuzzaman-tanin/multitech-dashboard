@@ -1,0 +1,215 @@
+@use '@/assets/styles/abstracts' as *;
+
+.sidebar {
+  position: fixed;
+  z-index: $z-modal;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  width: var(--app-sidebar-width);
+  max-width: calc(100vw - #{$spacing-lg});
+  flex-direction: column;
+  overflow: hidden;
+  background: linear-gradient(180deg, #0757b8 0%, #064ea9 45%, #034590 100%);
+  box-shadow: 24px 0 60px rgb(3 20 54 / 24%);
+  color: #fff;
+  transform: translateX(-100%);
+  transition: transform $transition-normal, width $transition-normal;
+
+  @include respond-to(lg) {
+    z-index: $z-sticky;
+    transform: none;
+  }
+}
+
+.collapsed {
+  @include respond-to(lg) {
+    width: var(--app-sidebar-collapsed-width);
+  }
+}
+
+.open {
+  transform: translateX(0);
+}
+
+.overlay {
+  position: fixed;
+  z-index: $z-sticky;
+  inset: 0;
+  display: none;
+  background: rgb(7 27 74 / 52%);
+  opacity: 0;
+  transition: opacity $transition-normal;
+}
+
+.overlayOpen {
+  display: block;
+  opacity: 1;
+
+  @include respond-to(lg) {
+    display: none;
+  }
+}
+
+.header {
+  display: flex;
+  min-height: var(--app-navbar-height);
+  align-items: center;
+  justify-content: flex-end;
+  gap: $spacing-md;
+  padding: $spacing-md $spacing-lg;
+
+  @include respond-to(lg) {
+    justify-content: flex-end;
+    padding: $spacing-md;
+  }
+}
+
+.closeButton,
+.collapseButton {
+  display: grid;
+  width: 44px;
+  height: 44px;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 0;
+  border-radius: $radius-md;
+  background: rgb(255 255 255 / 10%);
+  color: #fff;
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+.closeButton {
+  @include respond-to(lg) {
+    display: none;
+  }
+}
+
+.collapseButton {
+  display: none;
+
+  @include respond-to(lg) {
+    display: grid;
+  }
+}
+
+.nav {
+  min-height: 0;
+  flex: 1;
+  overflow-y: auto;
+  padding: $spacing-sm $spacing-md $spacing-lg;
+}
+
+.navList {
+  display: grid;
+  gap: $spacing-xs;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.navItem {
+  position: relative;
+  display: grid;
+  min-height: 44px;
+  flex: 1;
+  grid-template-columns: 24px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: $spacing-sm;
+  padding: 0 $spacing-sm 0 $spacing-md;
+  border-radius: $radius-md;
+  color: rgb(255 255 255 / 84%);
+  font-size: $font-size-sm;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background-color $transition-fast, color $transition-fast;
+
+  &:hover {
+    background: rgb(255 255 255 / 11%);
+    color: #fff;
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+.active {
+  background: #0b8cf0;
+  color: #fff;
+  box-shadow: 0 10px 24px rgb(0 31 85 / 18%);
+}
+
+.disabled {
+  cursor: not-allowed;
+  opacity: 0.56;
+}
+
+.navIcon {
+  display: grid;
+  place-items: center;
+  color: currentColor;
+  opacity: 0.92;
+}
+
+.navLabel {
+  @include truncate;
+}
+
+.badge {
+  min-width: 24px;
+  padding: 2px 7px;
+  border-radius: $radius-full;
+  background: var(--color-danger);
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 800;
+  line-height: 1.35;
+  text-align: center;
+}
+
+.collapsed {
+  @include respond-to(lg) {
+    .header {
+      justify-content: center;
+    }
+
+    .nav {
+      padding-inline: $spacing-sm;
+    }
+
+    .navItem {
+      grid-template-columns: 1fr;
+      justify-items: center;
+      padding-inline: $spacing-sm;
+    }
+
+    .navLabel {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    .badge {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 8px;
+      min-width: 8px;
+      height: 8px;
+      padding: 0;
+      overflow: hidden;
+      color: transparent;
+    }
+  }
+}

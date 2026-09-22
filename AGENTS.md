@@ -831,6 +831,57 @@ Follow existing typography, spacing, color, radius, breakpoint, and interaction 
 
 ---
 
+## 25.1 Responsive Component and Page Rules
+
+Build every new or modified page and component to work across mobile, tablet, laptop, and desktop viewports unless the product explicitly targets a narrower device class.
+
+### Follow the existing responsive system
+
+- Inspect the project's SCSS tokens, breakpoint mixins, layout utilities, and nearby responsive components before adding styles.
+- Reuse existing breakpoint names and mixins. Do not introduce isolated media-query values when an equivalent project breakpoint exists.
+- Keep responsive styles in the relevant SCSS module or established shared stylesheet. Do not add a new styling framework or runtime viewport library for layout that CSS can handle.
+- Preserve the application's established visual identity, spacing rhythm, typography scale, and component behavior at every breakpoint.
+
+### Use fluid, content-driven layouts
+
+- Start with the smallest supported viewport and progressively enhance the layout at existing breakpoints.
+- Prefer normal document flow, Flexbox, and Grid over absolute positioning for primary page and component layout.
+- Use fluid constraints such as `width: 100%`, `max-width`, `minmax()`, `clamp()`, and `aspect-ratio` where appropriate.
+- Avoid fixed widths and heights for content containers when content or viewport size can vary. Fixed dimensions are acceptable only for intentionally stable UI elements such as icons or compact controls.
+- Add `min-width: 0` to grid or flex children when necessary so long content can shrink instead of forcing horizontal overflow.
+- Ensure text, tables, media, form controls, and action groups wrap, scroll locally, stack, or resize intentionally on narrow screens.
+- Do not allow page-level horizontal scrolling at supported viewport sizes. Fix the element causing overflow instead of hiding layout defects globally.
+- Use `100dvh` or `100svh` with a suitable fallback when a full-viewport layout is required, so mobile browser chrome does not obscure content.
+
+### Adapt components intentionally
+
+- Keep components usable in narrow parent containers, not only at full-page viewport widths.
+- Stack columns and action groups when their minimum usable widths no longer fit. Do not merely shrink controls or text until they become difficult to use.
+- Keep forms visually balanced with a reasonable `max-width` on large screens and full available width with safe inline padding on small screens.
+- Allow labels, helper text, validation messages, links, and localized strings to wrap without clipping or overlapping adjacent content.
+- Keep images and media responsive with bounded dimensions and an intentional `object-fit` behavior.
+- Preserve a clear content hierarchy on small screens; do not hide required content solely to make the layout fit.
+- For dense data views, choose an explicit small-screen pattern such as controlled horizontal scrolling, responsive columns, or a stacked representation that preserves meaning and accessibility.
+
+### Maintain responsive accessibility
+
+- Keep body and form text readable without requiring zoom. Avoid input font sizes below `16px` on mobile where browser zoom may be triggered.
+- Provide touch targets of at least `44px` by `44px` for primary interactive controls where practical, with enough spacing to prevent accidental activation.
+- Preserve logical DOM order and keyboard navigation when the visual layout changes across breakpoints.
+- Keep visible focus states, labels, errors, and instructions available at every viewport size.
+- Do not rely on hover-only interactions for functionality that must work on touch devices.
+- Respect browser zoom, text scaling, reduced motion, safe-area insets, and user font-size preferences where relevant.
+
+### Verify responsive behavior
+
+- Test representative mobile, tablet, laptop, and desktop widths using the project's existing browser or end-to-end tooling.
+- Check both portrait and landscape orientations where the layout materially changes.
+- Verify the page at narrow width, short viewport height, long content, validation-error states, and increased browser zoom or text size.
+- Confirm there is no unintended horizontal overflow, clipped content, overlap, layout shift, or unreachable control.
+- Prefer visual verification with browser screenshots for user-facing layout changes when the available tooling supports it.
+
+---
+
 ## 26. Testing Rules
 
 Test user-visible behavior and business outcomes rather than internal implementation details.
@@ -1011,6 +1062,10 @@ Before finishing any change, verify:
 - [ ] Authorization-sensitive behavior is respected.
 - [ ] User-facing text uses localization where required.
 - [ ] Accessibility is considered.
+- [ ] Modified pages and components are usable on mobile, tablet, laptop, and desktop widths.
+- [ ] Portrait and landscape layouts do not clip, overlap, or introduce page-level horizontal scrolling.
+- [ ] Responsive styles reuse existing SCSS tokens, utilities, and breakpoint mixins.
+- [ ] Forms and interactive controls remain readable, keyboard accessible, and touch friendly at narrow widths.
 - [ ] No sensitive data is exposed or logged.
 - [ ] Imports and dependency direction remain clean.
 - [ ] Circular dependencies are avoided.

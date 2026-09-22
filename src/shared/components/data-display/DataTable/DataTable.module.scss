@@ -1,0 +1,56 @@
+@use '@/assets/styles/abstracts' as *;
+
+.tableWrap {
+  width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  min-width: 640px;
+  border-collapse: collapse;
+  color: #0c3070;
+  font-size: $font-size-xs;
+}
+
+.compact {
+  th,
+  td {
+    padding: 6px 9px;
+  }
+}
+
+.table {
+  th {
+    background: #edf5ff;
+    color: var(--color-navy);
+    font-size: 0.68rem;
+    font-weight: 800;
+    text-align: left;
+    white-space: nowrap;
+  }
+
+  td {
+    border-top: 1px solid #e6eef8;
+    vertical-align: middle;
+  }
+
+  tbody tr:nth-child(even) {
+    background: #f8fbff;
+  }
+}
+
+.center {
+  text-align: center;
+}
+
+.right {
+  text-align: right;
+}
+
+.empty {
+  padding: $spacing-lg;
+  color: var(--color-text-secondary);
+  text-align: center;
+}

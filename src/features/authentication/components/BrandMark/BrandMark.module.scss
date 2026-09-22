@@ -1,0 +1,17 @@
+@use '@/assets/styles/abstracts' as *;
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  width: min(100%, 300px);
+}
+
+.logo {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.compact {
+  width: min(100%, 232px);
+}

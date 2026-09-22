@@ -1,0 +1,92 @@
+@use '@/assets/styles/abstracts' as *;
+
+.grid {
+  display: grid;
+  gap: $spacing-sm;
+  grid-template-columns: 1fr;
+
+  @include respond-to(sm) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @include respond-to(lg) {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  @include respond-to(xxl) {
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+  }
+}
+
+.card {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: $spacing-sm;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  min-height: 86px;
+  padding: $spacing-md;
+  border: 1px solid rgb(197 214 235 / 82%);
+  border-radius: $radius-md;
+  background: var(--color-surface);
+  color: #0a43a0;
+  box-shadow: 0 10px 24px rgb(8 42 91 / 6%);
+}
+
+.icon {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border-radius: $radius-md;
+  background: var(--color-brand-soft);
+  color: var(--color-brand);
+}
+
+.success .icon {
+  background: #dcfce7;
+  color: #05a660;
+}
+
+.danger .icon {
+  background: #fee2e2;
+  color: #f5222d;
+}
+
+.body {
+  min-width: 0;
+}
+
+.label {
+  margin: 0;
+  color: #174285;
+  font-size: $font-size-xs;
+  font-weight: 500;
+}
+
+.value {
+  display: block;
+  color: var(--color-navy);
+  font-size: 1.45rem;
+  line-height: 1.1;
+}
+
+.trend {
+  display: inline-flex;
+  font-size: $font-size-xs;
+  font-weight: 500;
+}
+
+.positive {
+  color: #05a660;
+}
+
+.negative {
+  color: #f5222d;
+}
+
+.neutral {
+  color: var(--color-text-secondary);
+}

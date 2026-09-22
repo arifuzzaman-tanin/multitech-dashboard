@@ -1,0 +1,849 @@
+import { type CSSProperties, useEffect, useRef, useState } from 'react'
+import type { Map as LeafletMap } from 'leaflet'
+import { CircleMarker, MapContainer, Popup, TileLayer } from 'react-leaflet'
+import 'leaflet/dist/leaflet.css'
+import { Button } from '@/shared/components/actions/Button/Button'
+import { DataTable, type DataTableColumn } from '@/shared/components/data-display/DataTable'
+import { Panel } from '@/shared/components/data-display/Panel'
+import { StatusBadge, type StatusTone } from '@/shared/components/data-display/StatusBadge'
+import { OverviewIcon } from './OverviewIcon'
+import type {
+  ConnectivitySegment,
+  FleetGateway,
+  FleetTopologyData,
+  Incident,
+  IncidentDetailsModel,
+  IncidentStatus,
+  OperationalStatus,
+  OrganizationHealthRow,
+  OverviewIconName,
+  RecentChange,
+  Severity,
+  SiteLocation,
+  SystemHealthData,
+  TelemetryPoint,
+  TopologyGroup,
+  TopologySensor,
+  TopologySite,
+} from '../types/overview.types'
+import styles from './DashboardSections.module.scss'
+
+const operationalTone: Record<OperationalStatus, StatusTone> = {
+  degraded: 'warning',
+  offline: 'danger',
+  online: 'success',
+}
+
+const severityTone: Record<Severity, StatusTone> = {
+  critical: 'danger',
+  info: 'info',
+  major: 'warning',
+  minor: 'warning',
+}
+
+const incidentStatusTone: Record<IncidentStatus, StatusTone> = {
+  investigating: 'warning',
+  open: 'danger',
+  resolved: 'success',
+}
+
+const formatStatus = (value: string) =>
+  value
+    .split('-')
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ')
+
+const signalClass = (signal: string) => (signal.includes('-112') ? styles.dangerText : '')
+
+const formatPercentage = (value: number) => `${Number.isInteger(value) ? value : value.toFixed(1)}%`
+
+const getHealthProgressStyle = (percentage: number): CSSProperties => ({
+  '--health-progress': `${Math.max(0, Math.min(percentage, 100))}%`,
+}) as CSSProperties
+
+const siteMapStatusLegend: OperationalStatus[] = ['online', 'degraded', 'offline']
+
+const groupIconById: Record<string, 'bolt' | 'factory' | 'organization'> = {
+  manufacturing: 'factory',
+  utilities: 'bolt',
+}
+
+const gatewayIconByConnection: Record<TopologySite['connection'], 'cellular' | 'ethernet' | 'lora' | 'wifi'> = {
+  Cellular: 'cellular',
+  Ethernet: 'ethernet',
+  LoRaWAN: 'lora',
+  'Wi-Fi': 'wifi',
+}
+
+const sensorIconByName: Record<string, 'air' | 'bolt' | 'door' | 'droplets' | 'flow' | 'gauge' | 'level' | 'occupancy' | 'thermometer' | 'vibration'> = {
+  'air quality': 'air',
+  current: 'bolt',
+  door: 'door',
+  energy: 'bolt',
+  flow: 'flow',
+  humidity: 'droplets',
+  level: 'level',
+  occupancy: 'occupancy',
+  pressure: 'gauge',
+  temp: 'thermometer',
+  temperature: 'thermometer',
+  vibration: 'vibration',
+}
+
+const getGroupIcon = (group: TopologyGroup) => groupIconById[group.id] ?? 'organization'
+
+const getSensorIcon = (sensor: TopologySensor) =>
+  sensorIconByName[sensor.name.trim().toLowerCase()] ?? 'sensor'
+
+interface FleetTopologyProps {
+  topology: FleetTopologyData
+}
+
+export function FleetTopology({ topology }: FleetTopologyProps) {
+  const fullscreenRootRef = useRef<HTMLDivElement>(null)
+  const [view, setView] = useState<'topology' | 'list'>('topology')
+  const [isFullscreen, setIsFullscreen] = useState(false)
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(document.fullscreenElement === fullscreenRootRef.current)
+    }
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange)
+
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange)
+    }
+  }, [])
+
+  const handleToggleFullscreen = async () => {
+    if (document.fullscreenElement === fullscreenRootRef.current) {
+      await document.exitFullscreen()
+      return
+    }
+
+    await fullscreenRootRef.current?.requestFullscreen()
+  }
+
+  return (
+    <div className={styles.topologyFullscreenRoot} ref={fullscreenRootRef}>
+      <Panel
+        title="Fleet Topology"
+        className={[
+          styles.topologyPanel,
+          isFullscreen ? styles.fullscreenPanel : '',
+        ].filter(Boolean).join(' ')}
+        contentClassName={styles.centeredVisualizationContent}
+        actions={
+          <div className={styles.toolbar}>
+            <button
+              className={view === 'topology' ? styles.activeControl : ''}
+              onClick={() => setView('topology')}
+              type="button"
+            >
+              Topology
+            </button>
+            <button
+              className={view === 'list' ? styles.activeControl : ''}
+              onClick={() => setView('list')}
+              type="button"
+            >
+              List
+            </button>
+            <button
+              aria-pressed={isFullscreen}
+              onClick={handleToggleFullscreen}
+              type="button"
+            >
+              {isFullscreen ? 'Exit fullscreen' : 'Fullscreen'}
+            </button>
+          </div>
+        }
+      >
+        <div className={styles.legend} aria-label="Fleet topology legend">
+          <div className={styles.legendContent}>
+            <div className={[styles.legendGroup, styles.statusLegendGroup].join(' ')}>
+              <span className={styles.legendLabel}>Status</span>
+              <div className={styles.legendItems}>
+                <LegendDot label="Online" status="online" />
+                <LegendDot label="Degraded" status="degraded" />
+                <LegendDot label="Offline" status="offline" />
+              </div>
+            </div>
+            <div className={[styles.legendGroup, styles.connectionLegendGroup].join(' ')}>
+              <span className={styles.legendLabel}>Connection</span>
+              <div className={styles.legendItems}>
+                <LegendLine connection="Cellular" />
+                <LegendLine connection="LoRaWAN" />
+                <LegendLine connection="Wi-Fi" />
+                <LegendLine connection="Ethernet" />
+              </div>
+            </div>
+          </div>
+        </div>
+        {view === 'topology' ? (
+          <div className={styles.topologySurface}>
+            <div className={styles.topologyCanvas}>
+              <div className={styles.cloudNode}>
+                <OverviewIcon name="cloud" />
+                <strong>mCloud</strong>
+              </div>
+              <div className={styles.topologyTree}>
+                <div className={styles.cloudStem} aria-hidden="true" />
+                <div className={styles.organizationBranch} aria-hidden="true" />
+                <div className={styles.topologyGrid}>
+                  {topology.groups.map((group) => (
+                    <TopologyColumn group={group} key={group.id} />
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <DataTable
+            columns={topologyColumns}
+            getRowKey={(row) => row.id}
+            rows={topology.groups}
+            emptyMessage="No topology groups found."
+          />
+        )}
+      </Panel>
+    </div>
+  )
+}
+
+function LegendDot({ label, status }: { label: string; status: OperationalStatus }) {
+  return (
+    <span className={[styles.legendItem, styles.legendStatusItem, styles[`legend${formatStatus(status)}`]].join(' ')}>
+      <span className={[styles.legendDot, styles[status]].join(' ')} aria-hidden="true" />
+      {label}
+    </span>
+  )
+}
+
+function LegendLine({ connection }: { connection: TopologySite['connection'] }) {
+  const connectionKey = connection.replace('-', '')
+  const connectionClass = styles[`legendConnection${connectionKey}`]
+  const connectionIcon = gatewayIconByConnection[connection]
+
+  return (
+    <span className={[styles.legendItem, styles.legendConnectionItem, connectionClass].join(' ')}>
+      <OverviewIcon name={connectionIcon} size={16} strokeWidth={2.6} />
+      {connection}
+    </span>
+  )
+}
+
+function TopologyColumn({ group }: { group: TopologyGroup }) {
+  const connectionClass = styles[`connection${group.site.connection.replace('-', '')}`]
+
+  return (
+    <div className={styles.topologyColumn}>
+      <div className={styles.organizationStem} aria-hidden="true" />
+      <div className={styles.topologyNode}>
+        <OverviewIcon name={getGroupIcon(group)} size={18} />
+        <span><strong>{group.name}</strong><small>{group.deviceCount}</small></span>
+      </div>
+      <div className={styles.nodeConnector} aria-hidden="true" />
+      <div className={styles.siteNode}>
+        <OverviewIcon name="factory" size={17} />
+        <span><strong>{group.site.name}</strong><small>{group.site.deviceCount}</small></span>
+      </div>
+      <div className={[styles.gatewayConnector, connectionClass].join(' ')} aria-hidden="true" />
+      <div className={styles.gatewayNode}>
+        <OverviewIcon
+          className={styles.gatewayTypeIcon}
+          name={gatewayIconByConnection[group.site.connection]}
+          size={19}
+        />
+        <strong>{group.site.gatewayName}</strong>
+      </div>
+      <div className={[styles.sensorConnector, connectionClass].join(' ')} aria-hidden="true" />
+      <div className={[styles.sensorBranch, connectionClass].join(' ')} aria-hidden="true" />
+      <div className={styles.sensorGrid}>
+        {group.site.sensors.map((sensor) => (
+          <div className={styles.sensorNode} key={sensor.id}>
+            <span className={[styles.sensorStem, connectionClass].join(' ')} aria-hidden="true" />
+            <OverviewIcon name={getSensorIcon(sensor)} size={18} />
+            <strong>{sensor.name}</strong>
+            <small className={styles[sensor.status]}>{formatStatus(sensor.status)}</small>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+const topologyColumns: DataTableColumn<TopologyGroup>[] = [
+  { id: 'group', header: 'Organization', cell: (row) => row.name },
+  { id: 'devices', header: 'Devices', cell: (row) => row.deviceCount },
+  { id: 'site', header: 'Site', cell: (row) => row.site.name },
+  { id: 'gateway', header: 'Gateway', cell: (row) => row.site.gatewayName },
+  { id: 'status', header: 'Status', cell: (row) => <StatusBadge className={styles.statusBadge} label={formatStatus(row.site.gatewayStatus)} tone={operationalTone[row.site.gatewayStatus]} dot /> },
+]
+
+interface ActiveIncidentsProps {
+  incidents: Incident[]
+  selectedIncident: IncidentDetailsModel
+}
+
+const incidentColumns: DataTableColumn<Incident>[] = [
+  { id: 'severity', header: 'Severity', cell: (row) => <StatusBadge className={styles.statusBadge} label={formatStatus(row.severity)} tone={severityTone[row.severity]} dot /> },
+  { id: 'incident', header: 'Incident', cell: (row) => row.title },
+  { id: 'site', header: 'Organization / Site', cell: (row) => `${row.organization} / ${row.site}` },
+  { id: 'devices', header: 'Devices', align: 'center', cell: (row) => row.affectedDevices },
+  { id: 'seen', header: 'First Seen', cell: (row) => row.firstSeen },
+  { id: 'status', header: 'Status', cell: (row) => <StatusBadge className={styles.statusBadge} label={formatStatus(row.status)} tone={incidentStatusTone[row.status]} /> },
+]
+
+export function ActiveIncidents({ incidents, selectedIncident }: ActiveIncidentsProps) {
+  return (
+    <Panel
+      title="Active Incidents & Troubleshooting"
+      actions={<button className={styles.linkButton} type="button">View All</button>}
+    >
+      <DataTable
+        columns={incidentColumns}
+        getRowKey={(row) => row.id}
+        rows={incidents}
+        emptyMessage="No active incidents."
+      />
+      <article className={styles.incidentDetail}>
+        <div className={styles.incidentBody}>
+          <div className={styles.incidentDevice} aria-hidden="true">
+            <div className={styles.deviceAntenna} />
+            <div className={styles.deviceAntennaSmall} />
+            <div className={styles.deviceShell}>
+              <span>MultiTech</span>
+            </div>
+          </div>
+          <div className={styles.incidentContent}>
+            <div className={styles.detailHeader}>
+              <StatusBadge className={styles.statusBadge} label="Critical" tone="danger" />
+              <div className={styles.detailTitle}>
+                <h3>Gateway Offline - Detroit Plant</h3>
+                <p>MTCDT-AP-0023 {'\u00B7'} Last seen: {selectedIncident.firstSeen}</p>
+              </div>
+              <Button className={styles.smallButton}>Diagnose</Button>
+            </div>
+            <div className={styles.detailGrid}>
+              <KeyValue label="Model" value={selectedIncident.model} />
+              <KeyValue label="Serial" value={selectedIncident.serial} />
+              <KeyValue label="Firmware" value={selectedIncident.firmware} />
+              <KeyValue label="Site" value={selectedIncident.site} />
+              <KeyValue label="Last Seen" value={selectedIncident.lastSeen} />
+              <KeyValue label="Signal" value={selectedIncident.signal} strong />
+              <KeyValue label="Packet Loss" value={selectedIncident.packetLoss} strong />
+              <KeyValue label="Connected Sensors" value={selectedIncident.connectedSensors} strong />
+              <KeyValue label="IP Address" value={selectedIncident.ipAddress} />
+              <KeyValue label="CPU" value={selectedIncident.cpu} />
+              <KeyValue label="Memory" value={selectedIncident.memory} />
+              <KeyValue label="Uptime" value={selectedIncident.uptime} />
+            </div>
+            <div className={styles.nextAction}>
+              <span className={styles.actionIcon} aria-hidden="true">!</span>
+              <div>
+                <strong>Recommended Next Action</strong>
+                <p>{selectedIncident.recommendedAction}</p>
+                <Button className={styles.smallButton} variant="secondary">Run Connectivity Test</Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+    </Panel>
+  )
+}
+
+function KeyValue({ label, strong = false, value }: { label: string; value: string; strong?: boolean }) {
+  return (
+    <div className={styles.keyValue}>
+      <span>{label}</span>
+      <strong className={strong ? styles.dangerText : ''}>{value}</strong>
+    </div>
+  )
+}
+
+export function TelemetryTrends({ points }: { points: TelemetryPoint[] }) {
+  return (
+    <Panel
+      title="Telemetry & Alert Trends"
+      className={styles.telemetryPanel}
+      contentClassName={styles.centeredVisualizationContent}
+      actions={<select className={styles.select} aria-label="Telemetry trend time range"><option>Last 24 hours</option></select>}
+    >
+      <div className={styles.chartLegend}>
+        <ChartLegendItem color="temperature" label={'Temperature (\u00b0C)'} />
+        <ChartLegendItem color="humidity" label="Humidity (%)" />
+        <ChartLegendItem color="vibration" label="Vibration (mm/s)" />
+        <ChartLegendItem color="power" label="Power (kW)" />
+        <ChartLegendItem color="messages" label="Messages/sec" />
+        <ChartLegendItem color="alerts" label="Alerts" />
+      </div>
+      <div className={styles.chartFrame}>
+        <LineChart points={points} />
+      </div>
+    </Panel>
+  )
+}
+
+type TelemetrySeriesKey = keyof Pick<TelemetryPoint, 'temperature' | 'humidity' | 'vibration' | 'power' | 'messages'>
+
+type ChartLegendColor = TelemetrySeriesKey | 'alerts'
+
+const chartSeries: Array<{ className: string; key: TelemetrySeriesKey }> = [
+  { key: 'temperature', className: styles.seriesGreen },
+  { key: 'humidity', className: styles.seriesCyan },
+  { key: 'vibration', className: styles.seriesVibration },
+  { key: 'power', className: styles.seriesAmber },
+  { key: 'messages', className: styles.seriesBlue },
+]
+
+function ChartLegendItem({ color, label }: { color: ChartLegendColor; label: string }) {
+  return (
+    <span className={styles.chartLegendItem}>
+      <span className={[styles.chartLegendDot, styles[`chartLegend${formatStatus(color)}`]].join(' ')} aria-hidden="true" />
+      {label}
+    </span>
+  )
+}
+
+const formatAxisLabel = (label: string) => {
+  const [month = '', day = '', time = ''] = label.split(' ')
+
+  return { date: `${month} ${day}`.trim(), time }
+}
+
+const useElementWidth = () => {
+  const elementRef = useRef<HTMLDivElement>(null)
+  const [width, setWidth] = useState(0)
+
+  useEffect(() => {
+    const element = elementRef.current
+
+    if (!element) {
+      return
+    }
+
+    const updateWidth = () => {
+      setWidth(element.getBoundingClientRect().width)
+    }
+
+    updateWidth()
+
+    const resizeObserver = new ResizeObserver(([entry]) => {
+      setWidth(entry.contentRect.width)
+    })
+
+    resizeObserver.observe(element)
+
+    return () => {
+      resizeObserver.disconnect()
+    }
+  }, [])
+
+  return { elementRef, width }
+}
+
+function LineChart({ points }: { points: TelemetryPoint[] }) {
+  const { elementRef, width: containerWidth } = useElementWidth()
+  const isCompact = containerWidth > 0 && containerWidth < 560
+  const width = isCompact ? 560 : 720
+  const height = isCompact ? 188 : 158
+  const margin = isCompact
+    ? { bottom: 42, left: 30, right: 28, top: 10 }
+    : { bottom: 30, left: 34, right: 34, top: 8 }
+  const plotWidth = width - margin.left - margin.right
+  const plotHeight = height - margin.top - margin.bottom
+  const maxValue = 100
+  const maxAlerts = 30
+  const xLabelStep = isCompact ? 4 : 2
+  const alertBarWidth = isCompact ? 6 : 8
+  const xStep = plotWidth / Math.max(points.length - 1, 1)
+  const toX = (index: number) => margin.left + index * xStep
+  const toY = (value: number) => margin.top + plotHeight - (value / maxValue) * plotHeight
+  const toAlertHeight = (value: number) => (value / maxAlerts) * plotHeight
+  const toPath = (key: TelemetrySeriesKey) =>
+    points
+      .map((point, index) => {
+        const x = toX(index)
+        const y = toY(point[key])
+        return `${index === 0 ? 'M' : 'L'} ${x.toFixed(1)} ${y.toFixed(1)}`
+      })
+      .join(' ')
+  const xLabels = points.filter((_, index) => index % xLabelStep === 0)
+
+  return (
+    <div className={styles.lineChartSizer} ref={elementRef}>
+      <svg className={styles.lineChart} viewBox={`0 0 ${width} ${height}`} role="img" aria-label="Telemetry trends for temperature, humidity, vibration, power, messages, and alerts over the last 24 hours.">
+        {[0, 25, 50, 75, 100].map((tick) => (
+          <g key={tick}>
+            <line x1={margin.left} x2={width - margin.right} y1={toY(tick)} y2={toY(tick)} />
+            <text className={styles.axisLabel} textAnchor="end" x={margin.left - 8} y={toY(tick) + 3}>{tick}</text>
+          </g>
+        ))}
+        {[0, 10, 20, 30].map((tick) => (
+          <text className={styles.axisLabel} key={tick} x={width - margin.right + 10} y={margin.top + plotHeight - (tick / maxAlerts) * plotHeight + 3}>{tick}</text>
+        ))}
+        {xLabels.map((point, labelIndex) => {
+          const originalIndex = labelIndex * xLabelStep
+          const label = formatAxisLabel(point.label)
+
+          return (
+            <text className={styles.xAxisLabel} key={point.label} textAnchor="middle" x={toX(originalIndex)} y={height - 17}>
+              <tspan x={toX(originalIndex)}>{label.date}</tspan>
+              <tspan dy="11" x={toX(originalIndex)}>{label.time}</tspan>
+            </text>
+          )
+        })}
+        {points.map((point, index) => {
+          const barHeight = toAlertHeight(point.alerts)
+
+          return (
+            <rect
+              className={styles.alertBar}
+              height={barHeight}
+              key={point.label}
+              rx="1"
+              width={alertBarWidth}
+              x={toX(index) - alertBarWidth / 2}
+              y={margin.top + plotHeight - barHeight}
+            />
+          )
+        })}
+        {chartSeries.map((series) => (
+          <path className={series.className} d={toPath(series.key)} key={series.key} />
+        ))}
+      </svg>
+    </div>
+  )
+}
+
+export function ConnectivityBreakdown({ segments }: { segments: ConnectivitySegment[] }) {
+  const totalDevices = segments.reduce((total, segment) => total + segment.count, 0)
+  const gradient = segments
+    .reduce<{ parts: string[]; offset: number }>((acc, segment) => {
+      const start = acc.offset
+      const end = start + segment.percentage
+      acc.parts.push(`${segment.color} ${start}% ${end}%`)
+      acc.offset = end
+      return acc
+    }, { offset: 0, parts: [] })
+    .parts
+    .join(', ')
+
+  return (
+    <Panel
+      className={styles.connectivityPanel}
+      contentClassName={styles.centeredVisualizationContent}
+      title="Connectivity Breakdown"
+    >
+      <div className={styles.donutLayout}>
+        <div className={styles.donut} style={{ background: `conic-gradient(${gradient})` }} aria-label="Connectivity device breakdown chart">
+          <div className={styles.donutCenter}>
+            <strong>{totalDevices.toLocaleString()}</strong>
+            <span>Devices</span>
+          </div>
+        </div>
+        <div className={styles.segmentList}>
+          {segments.map((segment) => (
+            <div className={styles.segment} key={segment.id}>
+              <span style={{ background: segment.color }} aria-hidden="true" />
+              <strong>{segment.label}</strong>
+              <em>{segment.percentage}% ({segment.count.toLocaleString()})</em>
+            </div>
+          ))}
+        </div>
+      </div>
+    </Panel>
+  )
+}
+
+const organizationColumns: DataTableColumn<OrganizationHealthRow>[] = [
+  { id: 'org', header: 'Organization', cell: (row) => row.organizationName },
+  { id: 'online', header: 'Online %', cell: (row) => <strong className={row.onlinePercentage < 95 ? styles.dangerText : styles.successText}>{row.onlinePercentage}%</strong> },
+  { id: 'alerts', header: 'Critical Alerts', align: 'center', cell: (row) => <strong className={row.criticalAlerts > 0 ? styles.dangerText : ''}>{row.criticalAlerts}</strong> },
+  { id: 'gateways', header: 'Gateways', align: 'center', cell: (row) => row.gateways },
+  { id: 'sensors', header: 'Sensors', align: 'center', cell: (row) => row.sensors.toLocaleString() },
+  { id: 'rate', header: 'Data Rate', cell: (row) => row.dataRate },
+  { id: 'action', header: 'Action', cell: () => <button className={styles.pillButton} type="button">View</button> },
+]
+
+export function OrganizationHealth({ rows }: { rows: OrganizationHealthRow[] }) {
+  return (
+    <Panel title="Organization Health" actions={<button className={styles.linkButton} type="button">View All</button>}>
+      <DataTable columns={organizationColumns} getRowKey={(row) => row.id} rows={rows} emptyMessage="No organizations found." />
+    </Panel>
+  )
+}
+
+const gatewayColumns: DataTableColumn<FleetGateway>[] = [
+  { id: 'gateway', header: 'Gateway', cell: (row) => row.gateway },
+  { id: 'model', header: 'Model', cell: (row) => row.model },
+  { id: 'org', header: 'Organization', cell: (row) => row.organization },
+  { id: 'site', header: 'Site', cell: (row) => row.site },
+  { id: 'backhaul', header: 'Backhaul', cell: (row) => row.backhaul },
+  { id: 'lorawan', header: 'LoRaWAN Devices', align: 'center', cell: (row) => row.lorawanDevices },
+  { id: 'status', header: 'Status', cell: (row) => <StatusBadge className={styles.statusBadge} label={formatStatus(row.status)} tone={operationalTone[row.status]} dot /> },
+  { id: 'seen', header: 'Last Seen', cell: (row) => row.lastSeen },
+  { id: 'firmware', header: 'Firmware', cell: (row) => row.firmware },
+  { id: 'cpu', header: 'CPU', cell: (row) => row.cpu },
+  { id: 'memory', header: 'Memory', cell: (row) => row.memory },
+  { id: 'signal', header: 'Signal', cell: (row) => <strong className={signalClass(row.signal)}>{row.signal}</strong> },
+]
+
+export function TelemetryFleet({ gateways }: { gateways: FleetGateway[] }) {
+  return (
+    <Panel
+      className={styles.telemetryFleetPanel}
+      contentClassName={styles.telemetryFleetContent}
+      title="Telemetry Fleet"
+    >
+      <DataTable columns={gatewayColumns} getRowKey={(row) => row.id} rows={gateways} emptyMessage="No gateways found." />
+    </Panel>
+  )
+}
+
+interface GatewayAction {
+  label: string
+  icon: OverviewIconName
+  variant?: 'primary'
+}
+
+const selectedGatewayActions: GatewayAction[] = [
+  { label: 'Restart Service', icon: 'flow', variant: 'primary' },
+  { label: 'Reboot Gateway', icon: 'clock', variant: 'primary' },
+  { label: 'Sync Config', icon: 'cloud' },
+  { label: 'Run Connectivity Test', icon: 'wifi' },
+  { label: 'View Logs', icon: 'database' },
+  { label: 'Deploy Firmware', icon: 'device' },
+]
+
+const selectedGatewayDetails: Array<{ label: string; key: keyof FleetGateway; icon: OverviewIconName }> = [
+  { label: 'Model', key: 'model', icon: 'gateway' },
+  { label: 'Backhaul', key: 'backhaul', icon: 'cellular' },
+  { label: 'LoRaWAN Devices', key: 'lorawanDevices', icon: 'lora' },
+  { label: 'Firmware', key: 'firmware', icon: 'device' },
+  { label: 'CPU / Memory', key: 'cpu', icon: 'gauge' },
+  { label: 'Signal', key: 'signal', icon: 'signal' },
+]
+
+export function SelectedGateway({ gateway }: { gateway: FleetGateway & { region: string } }) {
+  return (
+    <Panel
+      className={styles.selectedGatewayPanel}
+      contentClassName={styles.selectedGatewayContent}
+      padding="sm"
+      title="Selected Gateway"
+    >
+      <div className={styles.gatewayControls}>
+        <div className={styles.gatewayHero}>
+          <div className={styles.selectedGatewayMain}>
+            <div className={styles.gatewayDevice} aria-hidden="true">
+              <span className={styles.gatewaySignalRing} />
+              <span className={styles.gatewaySignalRing} />
+              <span className={styles.gatewayAntenna} />
+              <span className={styles.gatewayAntennaSmall} />
+              <span className={styles.gatewayBody}>
+                <span className={styles.gatewayPort} />
+                <span className={styles.gatewayPort} />
+                <span className={styles.gatewayPort} />
+                <span className={styles.gatewayLed} />
+              </span>
+            </div>
+            <div className={styles.gatewaySummary}>
+              <span className={styles.gatewayEyebrow}>Active gateway</span>
+              <div className={styles.gatewayTitleRow}>
+                <h3>{gateway.gateway}</h3>
+                <StatusBadge className={styles.gatewayStatusBadge} label={formatStatus(gateway.status)} tone={operationalTone[gateway.status]} dot />
+              </div>
+              <p>
+                <OverviewIcon name="location" size={13} strokeWidth={2.1} />
+                <span>{gateway.region}</span>
+              </p>
+            </div>
+            <div className={styles.gatewayHeroStats} aria-label="Gateway quick metrics">
+              <div>
+                <OverviewIcon name="clock" size={15} strokeWidth={2} />
+                <span>{gateway.lastSeen}</span>
+                <strong>Last Seen</strong>
+              </div>
+              <div>
+                <OverviewIcon name="location" size={15} strokeWidth={2} />
+                <span>{gateway.site}</span>
+                <strong>Site Name</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+        <dl className={styles.gatewayDetails}>
+          {selectedGatewayDetails.map((detail) => (
+            <div key={detail.key}>
+              <OverviewIcon name={detail.icon} size={16} strokeWidth={2.1} />
+              <dt>{detail.label}</dt>
+              <dd>
+                {detail.key === 'cpu'
+                  ? `${gateway.cpu} / ${gateway.memory}`
+                  : gateway[detail.key]}
+              </dd>
+            </div>
+          ))}
+        </dl>
+        <div className={styles.gatewayActions}>
+          {selectedGatewayActions.map((action) => (
+            <button className={action.variant === 'primary' ? styles.gatewayPrimaryAction : undefined} key={action.label} type="button">
+              <OverviewIcon name={action.icon} size={12} strokeWidth={2.2} />
+              <span>{action.label}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+      <div className={styles.gatewayAuditBar}>
+        <p className={styles.auditNote}>
+          <OverviewIcon name="clock" size={13} strokeWidth={2.1} />
+          <span>All actions are logged and audited</span>
+        </p>
+        <button className={styles.auditTrailButton} type="button">
+          <span>View Audit Trail</span>
+          <OverviewIcon name="arrow-right" size={13} strokeWidth={2.2} />
+        </button>
+      </div>
+    </Panel>
+  )
+}
+
+const markerColorByStatus: Record<OperationalStatus, string> = {
+  online: '#05a660',
+  degraded: '#f59e0b',
+  offline: '#f5222d',
+}
+
+function MapZoomControls({ map }: { map: LeafletMap }) {
+  const [zoom, setZoom] = useState(() => map.getZoom())
+
+  useEffect(() => {
+    const handleZoom = () => setZoom(map.getZoom())
+    map.on('zoomend', handleZoom)
+    return () => {
+      map.off('zoomend', handleZoom)
+    }
+  }, [map])
+
+  return (
+    <div className={styles.mapControls}>
+      <button aria-label="Zoom in map" disabled={zoom >= map.getMaxZoom()} onClick={() => map.zoomIn()} type="button">+</button>
+      <button aria-label="Zoom out map" disabled={zoom <= map.getMinZoom()} onClick={() => map.zoomOut()} type="button">-</button>
+    </div>
+  )
+}
+
+export function SiteMap({ sites }: { sites: SiteLocation[] }) {
+  const [map, setMap] = useState<LeafletMap | null>(null)
+
+  return (
+    <Panel
+      title="Site Map"
+      className={styles.siteMapPanel}
+      contentClassName={styles.siteMapContent}
+      actions={(
+        <div className={styles.siteMapHeaderActions}>
+          <div className={styles.siteMapLegend} aria-label="Site status legend">
+            {siteMapStatusLegend.map((status) => (
+              <span className={styles.siteMapLegendItem} key={status}>
+                <span className={[styles.siteMapLegendDot, styles[status]].join(' ')} aria-hidden="true" />
+                {formatStatus(status)}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+    >
+      <div className={styles.map} role="region" aria-label="Interactive OpenStreetMap showing monitored sites across North America, Europe, and Asia Pacific.">
+        <MapContainer
+          boxZoom
+          center={[22, 5]}
+          className={styles.leafletMap}
+          doubleClickZoom
+          dragging
+          keyboard
+          maxZoom={18}
+          minZoom={1}
+          ref={setMap}
+          scrollWheelZoom
+          touchZoom
+          worldCopyJump
+          zoom={1}
+          zoomControl={false}
+        >
+          <TileLayer
+            attribution="&copy; OpenStreetMap contributors"
+            className={styles.leafletTiles}
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          />
+          {sites.map((site) => (
+            <CircleMarker
+              center={[site.latitude, site.longitude]}
+              key={site.id}
+              pathOptions={{ color: '#ffffff', fillColor: markerColorByStatus[site.status], fillOpacity: 1, weight: 2 }}
+              radius={6}
+            >
+              <Popup>
+                <strong>{site.name}</strong><br />
+                Status: {formatStatus(site.status)}
+              </Popup>
+            </CircleMarker>
+          ))}
+        </MapContainer>
+        {map && <MapZoomControls map={map} />}
+      </div>
+    </Panel>
+  )
+}
+
+const changeColumns: DataTableColumn<RecentChange>[] = [
+  { id: 'time', header: 'Time', cell: (row) => row.time },
+  { id: 'user', header: 'User', cell: (row) => row.user },
+  { id: 'action', header: 'Action', cell: (row) => row.action },
+  { id: 'target', header: 'Target', cell: (row) => row.target },
+  { id: 'details', header: 'Details', cell: (row) => row.details },
+]
+
+export function RecentChanges({ changes }: { changes: RecentChange[] }) {
+  return (
+    <Panel title="Recent Changes" actions={<button className={styles.linkButton} type="button">View All</button>}>
+      <DataTable columns={changeColumns} getRowKey={(row) => row.id} rows={changes} emptyMessage="No recent changes." />
+    </Panel>
+  )
+}
+
+export function SystemHealth({ health }: { health: SystemHealthData }) {
+  return (
+    <Panel
+      title="System Health"
+      actions={<StatusBadge className={styles.statusBadge} label={health.statusLabel} tone={health.statusTone} dot />}
+    >
+      <div className={styles.healthGrid}>
+        {health.items.map((item) => (
+          <article className={styles.healthCard} key={item.id}>
+            <div className={styles.healthCardHeader}>
+              <span>{item.label}</span>
+              <strong className={styles[`healthTone${formatStatus(item.tone)}`]}>{formatPercentage(item.percentage)}</strong>
+            </div>
+            <div
+              aria-label={`${item.label} ${formatPercentage(item.percentage)}`}
+              aria-valuemax={100}
+              aria-valuemin={0}
+              aria-valuenow={item.percentage}
+              className={`${styles.healthProgress} ${styles[`healthProgress${formatStatus(item.tone)}`]}`}
+              role="progressbar"
+              style={getHealthProgressStyle(item.percentage)}
+            >
+              <span />
+            </div>
+          </article>
+        ))}
+      </div>
+    </Panel>
+  )
+}
+

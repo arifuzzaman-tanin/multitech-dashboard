@@ -1,0 +1,84 @@
+@use '@/assets/styles/abstracts' as *;
+
+.header {
+  display: grid;
+  gap: $spacing-md;
+  align-items: center;
+  padding-block: $spacing-md;
+
+  @include respond-to(md) {
+    padding-block: $spacing-lg;
+  }
+
+  @include respond-to(xl) {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+}
+
+.copy {
+  display: flex;
+  min-width: 0;
+  align-items: flex-start;
+  gap: $spacing-md;
+}
+
+.icon {
+  display: none;
+  width: 48px;
+  height: 48px;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid rgb(31 111 219 / 14%);
+  border-radius: $radius-md;
+  background: linear-gradient(135deg, #0b5fd3, #0f8aef);
+  color: #fff;
+  box-shadow: 0 12px 24px rgb(13 91 192 / 20%);
+
+  @include respond-to(sm) {
+    display: grid;
+  }
+}
+
+.titleGroup {
+  min-width: 0;
+
+  h1 {
+    margin: 0;
+    color: var(--color-navy);
+    font-size: clamp(1.6rem, 2vw, 2.15rem);
+    line-height: 1.1;
+  }
+
+  p {
+    max-width: 680px;
+    margin: $spacing-xs 0 0;
+    color: #315681;
+    font-size: $font-size-sm;
+    line-height: 1.5;
+  }
+}
+
+.meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: $spacing-xs;
+  color: #0c3070;
+  font-size: $font-size-xs;
+
+  @include respond-to(xl) {
+    align-items: flex-end;
+  }
+}
+
+.metaItem {
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-xs;
+  color: #143f78;
+  font-weight: 700;
+}
+
+.update {
+  color: #147246;
+}
