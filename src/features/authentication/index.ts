@@ -1,2 +1,5 @@
 export { LoginPage } from './pages/LoginPage'
+export { AuthProvider } from './providers/AuthProvider'
+export { useAuth } from './providers/useAuth'
 export { RegistrationPage } from './pages/RegistrationPage'
+export type { AuthUser } from './api/rest/auth.types'

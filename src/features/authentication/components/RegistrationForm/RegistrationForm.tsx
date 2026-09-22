@@ -1,6 +1,8 @@
 import { useState, type FormEvent } from 'react'
+import { ApiError } from '@/shared/api/apiClient'
 import { Button } from '@/shared/components/actions/Button/Button'
 import { Input } from '@/shared/components/forms/Input/Input'
+import { useAuth } from '../../providers/useAuth'
 import { validateRegistration } from '../../schemas/registration.schema'
 import type { RegistrationFormErrors, RegistrationFormValues } from '../../types/authentication.types'
 import { ArrowRightIcon, BuildingIcon, EyeIcon, EyeOffIcon, LockIcon, MailIcon, UserIcon } from '../icons'
@@ -14,20 +16,51 @@ const INITIAL_VALUES: RegistrationFormValues = {
   confirmPassword: '',
 }
 
-export function RegistrationForm() {
+interface RegistrationFormProps {
+  onSuccess: (email: string) => void
+}
+
+export function RegistrationForm({ onSuccess }: RegistrationFormProps) {
+  const { register } = useAuth()
   const [values, setValues] = useState<RegistrationFormValues>(INITIAL_VALUES)
   const [errors, setErrors] = useState<RegistrationFormErrors>({})
   const [isPasswordVisible, setIsPasswordVisible] = useState(false)
   const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState<string | null>(null)
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
+    setSubmitError(null)
+
     const nextErrors = validateRegistration(values)
     setErrors(nextErrors)
 
     if (Object.keys(nextErrors).length > 0) return
 
-    // Valid registration details remain local until the registration API contract is available.
+    setIsSubmitting(true)
+
+    try {
+      await register({
+        company: values.company,
+        email: values.email,
+        name: values.name,
+        password: values.password,
+      })
+      onSuccess(values.email.trim())
+      setValues(INITIAL_VALUES)
+    } catch (error) {
+      if (error instanceof ApiError) {
+        setErrors((currentErrors) => ({ ...currentErrors, ...mapRegistrationFieldErrors(error.fieldErrors) }))
+        setSubmitError(error.message)
+      } else {
+        setSubmitError('Unable to create an account right now. Please try again.')
+      }
+
+      setValues((currentValues) => ({ ...currentValues, password: '', confirmPassword: '' }))
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -38,6 +71,12 @@ export function RegistrationForm() {
       </header>
 
       <form aria-labelledby="registration-title" className={styles.form} noValidate onSubmit={handleSubmit}>
+        {submitError && (
+          <p className={styles.errorMessage} role="alert">
+            {submitError}
+          </p>
+        )}
+
         <Input
           autoComplete="name"
           error={errors.name}
@@ -136,7 +175,14 @@ export function RegistrationForm() {
           value={values.confirmPassword}
         />
 
-        <Button fullWidth trailingIcon={<ArrowRightIcon />} type="submit">Create account</Button>
+        <Button
+          fullWidth
+          isLoading={isSubmitting}
+          trailingIcon={<ArrowRightIcon />}
+          type="submit"
+        >
+          Create account
+        </Button>
 
         <p className={styles.contact}>
           Already have an account? <a href="/">Sign in</a>
@@ -144,4 +190,13 @@ export function RegistrationForm() {
       </form>
     </div>
   )
+}
+
+function mapRegistrationFieldErrors(fieldErrors: Record<string, string> | undefined): RegistrationFormErrors {
+  return {
+    company: fieldErrors?.company,
+    email: fieldErrors?.email,
+    name: fieldErrors?.name,
+    password: fieldErrors?.password,
+  }
 }

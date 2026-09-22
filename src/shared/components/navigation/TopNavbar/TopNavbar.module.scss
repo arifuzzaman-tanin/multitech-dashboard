@@ -44,7 +44,8 @@
 
 .menuButton,
 .iconButton,
-.profileButton {
+.profileButton,
+.logoutButton {
   border: 1px solid transparent;
   background: transparent;
   color: var(--color-navy);
@@ -250,4 +251,24 @@
   color: var(--color-text-secondary);
   font-size: $font-size-xs;
   font-weight: 600;
+}
+
+.logoutButton {
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  border-radius: $radius-full;
+  color: var(--color-brand);
+  font-size: $font-size-sm;
+  font-weight: 800;
+  padding: 0 $spacing-sm;
+
+  &:hover {
+    border-color: #d9e6f5;
+    background: #fff;
+  }
+
+  @include respond-to(md) {
+    padding: 0 $spacing-md;
+  }
 }

@@ -1,4 +1,5 @@
 import { useEffect, useState, type ReactNode } from 'react'
+import { useAuth } from '@/features/authentication'
 import { Sidebar } from '@/shared/components/navigation/Sidebar'
 import { TopNavbar } from '@/shared/components/navigation/TopNavbar'
 import styles from './AppShell.module.scss'
@@ -6,10 +7,12 @@ import styles from './AppShell.module.scss'
 interface AppShellProps {
   children: ReactNode
   currentPath: string
+  onLogout: () => void
   onNavigate: (path: string) => void
 }
 
-export function AppShell({ children, currentPath, onNavigate }: AppShellProps) {
+export function AppShell({ children, currentPath, onLogout, onNavigate }: AppShellProps) {
+  const { user } = useAuth()
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false)
 
@@ -66,7 +69,7 @@ export function AppShell({ children, currentPath, onNavigate }: AppShellProps) {
         onNavigate={handleNavigate}
       />
       <div className={workspaceClasses}>
-        <TopNavbar onMenuClick={() => setIsSidebarOpen(true)} />
+        <TopNavbar onLogout={onLogout} onMenuClick={() => setIsSidebarOpen(true)} user={user} />
         <main className={styles.main}>{children}</main>
       </div>
     </div>

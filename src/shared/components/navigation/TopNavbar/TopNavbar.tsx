@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import {
   navbarSelectors,
-  navbarUser,
   notificationCount,
 } from '@/app/config/navigation'
 import multitechLogoUrl from '@/assets/images/multitech-logo.svg'
@@ -9,12 +8,22 @@ import { NavIcon } from '@/shared/components/navigation/icons'
 import { NavbarSelector } from './NavbarSelector'
 import styles from './TopNavbar.module.scss'
 
-interface TopNavbarProps {
-  onMenuClick: () => void
+interface NavbarUser {
+  name: string
+  company: string
 }
 
-export function TopNavbar({ onMenuClick }: TopNavbarProps) {
+interface TopNavbarProps {
+  onLogout: () => void
+  onMenuClick: () => void
+  user: NavbarUser | null
+}
+
+export function TopNavbar({ onLogout, onMenuClick, user }: TopNavbarProps) {
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false)
+  const displayName = user?.name ?? 'Account'
+  const company = user?.company ?? 'Signed in'
+  const initials = getInitials(displayName)
 
   const handleFilterClick = () => {
     setIsMobileFilterOpen((currentValue) => !currentValue)
@@ -65,19 +74,38 @@ export function TopNavbar({ onMenuClick }: TopNavbarProps) {
           )}
         </button>
         <button
-          aria-label={`Open profile menu for ${navbarUser.name}`}
+          aria-label={`Open profile menu for ${displayName}`}
           className={styles.profileButton}
           type="button"
         >
           <span className={styles.avatar} aria-hidden="true">
-            {navbarUser.initials}
+            {initials}
           </span>
           <span className={styles.profileText}>
-            <span className={styles.profileName}>{navbarUser.name}</span>
-            <span className={styles.profileRole}>{navbarUser.role}</span>
+            <span className={styles.profileName}>{displayName}</span>
+            <span className={styles.profileRole}>{company}</span>
           </span>
+        </button>
+        <button
+          className={styles.logoutButton}
+          onClick={onLogout}
+          type="button"
+        >
+          Sign out
         </button>
       </div>
     </header>
   )
+}
+
+function getInitials(name: string) {
+  const initials = name
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((part) => part[0])
+    .join('')
+    .toUpperCase()
+
+  return initials || 'MT'
 }

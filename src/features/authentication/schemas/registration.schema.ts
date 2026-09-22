@@ -3,7 +3,7 @@ import type { RegistrationFormErrors, RegistrationFormValues } from '../types/au
 const EMAIL_MAX_LENGTH = 254
 const TEXT_MAX_LENGTH = 120
 const PASSWORD_MIN_LENGTH = 8
-const PASSWORD_MAX_LENGTH = 1024
+const PASSWORD_MAX_LENGTH = 128
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 export function validateRegistration(values: RegistrationFormValues): RegistrationFormErrors {

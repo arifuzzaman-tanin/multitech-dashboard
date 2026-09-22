@@ -31,6 +31,28 @@
   gap: clamp($spacing-lg, 6vw, 30px);
 }
 
+.errorMessage,
+.successMessage {
+  margin: 0;
+  border-radius: $radius-md;
+  font-size: $font-size-sm;
+  font-weight: 700;
+  line-height: 1.5;
+  padding: $spacing-sm $spacing-md;
+}
+
+.errorMessage {
+  border: 1px solid rgb(190 18 60 / 18%);
+  background: rgb(255 241 242);
+  color: #9f1239;
+}
+
+.successMessage {
+  border: 1px solid rgb(22 101 52 / 18%);
+  background: rgb(240 253 244);
+  color: #166534;
+}
+
 .passwordGroup { display: grid; gap: 10px; }
 
 .visibilityButton {
