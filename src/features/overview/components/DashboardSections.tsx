@@ -594,7 +594,11 @@ const gatewayColumns: DataTableColumn<FleetGateway>[] = [
 
 export function TelemetryFleet({ gateways }: { gateways: FleetGateway[] }) {
   return (
-    <Panel title="Telemetry Fleet">
+    <Panel
+      className={styles.telemetryFleetPanel}
+      contentClassName={styles.telemetryFleetContent}
+      title="Telemetry Fleet"
+    >
       <DataTable columns={gatewayColumns} getRowKey={(row) => row.id} rows={gateways} emptyMessage="No gateways found." />
     </Panel>
   )

@@ -924,9 +924,40 @@
   }
 }
 
+.telemetryFleetPanel {
+  display: grid;
+  height: 100%;
+  min-height: 0;
+  grid-template-rows: auto minmax(0, 1fr);
+}
+
+.telemetryFleetContent {
+  min-height: 0;
+  overflow: auto;
+
+  > div {
+    height: 100%;
+  }
+}
+
+.telemetryFleetContent table {
+  td,
+  th {
+    white-space: nowrap;
+  }
+
+  th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+  }
+}
+
 .selectedGatewayPanel {
   display: flex;
   flex-direction: column;
+  height: 100%;
+  min-height: 0;
   overflow: hidden;
   border-color: #d6e6f8;
   border-radius: $radius-md;

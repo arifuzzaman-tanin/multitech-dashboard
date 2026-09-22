@@ -52,8 +52,15 @@
 }
 
 .fleetGrid {
+  align-items: stretch;
+
   @include respond-to(xl) {
+    grid-auto-rows: clamp(390px, 32vw, 430px);
     grid-template-columns: minmax(0, 1.65fr) minmax(360px, 0.95fr);
+
+    > * {
+      min-height: 0;
+    }
   }
 }
 
