@@ -8,6 +8,7 @@ interface ApiRequestOptions {
   isAuthRequest?: boolean
   method?: HttpMethod
   retryOnUnauthorized?: boolean
+  signal?: AbortSignal
 }
 
 interface ApiAuthHandlers {
@@ -67,6 +68,7 @@ async function sendRequest<TResponse>(
     credentials: options.isAuthRequest ? 'include' : 'same-origin',
     headers,
     method: options.method ?? 'GET',
+    signal: options.signal,
   })
 
   if (

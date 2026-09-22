@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { LoginPage, RegistrationPage, useAuth } from '@/features/authentication'
 import { DashboardUnavailablePage } from '@/features/dashboard'
 import { OverviewPage } from '@/features/overview'
+import { appConfig } from '@/app/config/appConfig'
 import { dashboardPaths, navigationItems } from '@/app/config/navigation'
 import { AppShell } from '@/app/layout/AppShell'
 import { AppLoadingScreen } from '@/shared/components/feedback/AppLoadingScreen'
@@ -31,6 +32,10 @@ export function AppRouter() {
       window.removeEventListener('popstate', handlePopState)
     }
   }, [])
+
+  useEffect(() => {
+    document.title = getPageTitle(path)
+  }, [path])
 
   const navigate = useCallback((nextPath: string, options: { replace?: boolean } = {}) => {
     const nextUrl = new URL(nextPath, window.location.origin)
@@ -129,6 +134,24 @@ function getSafeRedirectPath(search: string) {
   }
 
   return overviewPath
+}
+
+function getPageTitle(path: string) {
+  const titlePrefix = getPageTitlePrefix(path)
+
+  return titlePrefix ? `${titlePrefix} | ${appConfig.appName}` : appConfig.appName
+}
+
+function getPageTitlePrefix(path: string) {
+  if (path === loginPath) {
+    return 'Sign in'
+  }
+
+  if (path === registerPath) {
+    return 'Create account'
+  }
+
+  return navigationItems.find((item) => item.path === path)?.label ?? null
 }
 
 interface RedirectProps {

@@ -1,3 +1,5 @@
+import { Button } from '@/shared/components/actions/Button/Button'
+
 import {
   ActiveIncidents,
   ConnectivityBreakdown,
@@ -16,7 +18,7 @@ import { useOverviewDashboard } from '../hooks/useOverviewDashboard'
 import styles from './OverviewPage.module.scss'
 
 export function OverviewPage() {
-  const { data, error, isLoading } = useOverviewDashboard()
+  const { data, error, isLoading, refetch } = useOverviewDashboard()
 
   if (isLoading) {
     return (
@@ -32,7 +34,7 @@ export function OverviewPage() {
         <div className={styles.stateCard}>
           <h1>Unable to load overview</h1>
           <p>{error ?? 'Overview data is not available.'}</p>
-          <button type="button">Retry</button>
+          <Button onClick={refetch} type="button">Retry</Button>
         </div>
       </div>
     )
